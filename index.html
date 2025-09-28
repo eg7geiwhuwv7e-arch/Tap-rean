@@ -9,7 +9,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent; /* Remove blue tap overlay */
+            -webkit-tap-highlight-color: transparent;
         }
 
         :root {
@@ -29,14 +29,14 @@
             color: var(--text-primary);
             line-height: 1.5;
             overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent; /* Remove blue tap overlay */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .container {
             max-width: 100%;
             padding: 15px;
             margin: 0 auto;
-            padding-bottom: 80px; /* Space for bottom nav */
+            padding-bottom: 80px;
         }
 
         .section {
@@ -67,7 +67,7 @@
             transition: all 0.2s ease;
             display: inline-block;
             text-align: center;
-            -webkit-tap-highlight-color: transparent; /* Remove blue tap overlay */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:hover {
@@ -86,7 +86,6 @@
             box-shadow: none;
         }
 
-        /* Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -111,7 +110,7 @@
             text-align: center;
             flex: 1;
             max-width: 25%;
-            -webkit-tap-highlight-color: transparent; /* Remove blue tap overlay */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .nav-item.active {
@@ -127,7 +126,6 @@
             font-size: 12px;
         }
 
-        /* Header & Stats */
         .header {
             display: flex;
             justify-content: space-between;
@@ -160,7 +158,6 @@
             color: var(--text-secondary);
         }
 
-        /* Tap Section */
         .tap-area {
             display: flex;
             flex-direction: column;
@@ -184,11 +181,10 @@
             position: relative;
             user-select: none;
             transition: transform 0.1s, box-shadow 0.1s;
-            -webkit-tap-highlight-color: transparent; /* Remove blue tap overlay */
-            outline: none; /* Remove focus outline */
+            -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
-        /* Improved coin tap effect */
         .coin:active {
             transform: scale(0.92);
             box-shadow: 0 5px 15px rgba(38, 161, 123, 0.6);
@@ -228,7 +224,6 @@
             font-weight: 600;
         }
 
-        /* Tasks Section */
         .tasks-list {
             display: flex;
             flex-direction: column;
@@ -264,7 +259,6 @@
             margin-left: 10px;
         }
 
-        /* Profile Section */
         .profile-header {
             display: flex;
             align-items: center;
@@ -319,7 +313,6 @@
             padding: 10px 15px;
         }
 
-        /* Withdrawal Section */
         .exchange-rate {
             text-align: center;
             margin-bottom: 20px;
@@ -388,7 +381,6 @@
             color: #ff4d4d;
         }
 
-        /* Admin Panel */
         .admin-panel {
             display: none;
             padding: 20px;
@@ -430,7 +422,6 @@
             grid-column: 1 / -1;
         }
 
-        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -468,7 +459,6 @@
             }
         }
 
-        /* Utility Classes */
         .text-center {
             text-align: center;
         }
@@ -485,14 +475,12 @@
             display: none;
         }
 
-        /* Responsive */
         @media (min-width: 768px) {
             .container {
                 max-width: 600px;
             }
         }
 
-        /* Password Modal */
         .modal {
             display: none;
             position: fixed;
@@ -529,7 +517,6 @@
             color: var(--text-primary);
         }
 
-        /* Custom Withdrawal Input */
         .withdrawal-amount-container {
             display: flex;
             flex-direction: column;
@@ -564,7 +551,7 @@
             border-radius: var(--border-radius);
             cursor: pointer;
             transition: all 0.2s;
-            -webkit-tap-highlight-color: transparent; /* Remove blue tap overlay */
+            -webkit-tap-highlight-color: transparent;
         }
 
         .quick-amount:hover {
@@ -578,7 +565,6 @@
             margin-top: 5px;
         }
 
-        /* Ad Container */
         .ad-container {
             position: fixed;
             top: 0;
@@ -615,10 +601,9 @@
             color: white;
             font-size: 24px;
             cursor: pointer;
-            -webkit-tap-highlight-color: transparent; /* Remove blue tap overlay */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* Coin glow effect for better visual feedback */
         .coin-glow {
             position: absolute;
             top: 0;
@@ -649,6 +634,20 @@
                 opacity: 0;
                 transform: scale(1.3);
             }
+        }
+
+        .ad-badge {
+            background: linear-gradient(45deg, #FF6B6B, #FFA500);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+
+        .interstitial-badge {
+            background: linear-gradient(45deg, #4ECDC4, #00CED1);
         }
     </style>
     
@@ -884,6 +883,8 @@
                         <option value="url">URL/Visit</option>
                         <option value="channel">Telegram Channel</option>
                         <option value="ad">Watch Ad</option>
+                        <option value="pop_ad">Pop Ad</option>
+                        <option value="interstitial_ad">Interstitial Ad</option>
                     </select>
                     <input type="text" id="task-target" placeholder="URL or Channel ID" required>
                     <textarea id="task-description" placeholder="Task Description" class="full-width" required></textarea>
@@ -922,7 +923,7 @@
     </div>
     
     <script>
-        // Firebase Configuration (Replace with your actual config)
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC4wGDrMTa6e3Vi11z1Z6Q1aX9QkLd0Y3M",
             authDomain: "tap-earn-7d4f3.firebaseapp.com",
@@ -947,12 +948,14 @@
             level: 1,
             tapsToday: 0,
             lastTapDate: null,
-            limitReachedTime: null, // When user reached 1000 taps
+            limitReachedTime: null,
             referredBy: null,
-            completedTasks: [] // Track completed tasks
+            completedTasks: [],
+            completedPopAds: 0,
+            completedInterstitialAds: 0
         };
 
-        let conversionRate = 0.000036; // Default exchange rate
+        let conversionRate = 0.000036;
         let tasks = [];
         let isOnline = true;
         let pendingActions = [];
@@ -961,6 +964,33 @@
         let countdownInterval = null;
         let adShownCount = 0;
         let lastAdShownTime = 0;
+
+        // Default ad tasks
+        const defaultAdTasks = [
+            // Pop Ads - 10 coins each
+            { id: 'pop_ad_1', title: 'Watch Pop Ad 1', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            { id: 'pop_ad_2', title: 'Watch Pop Ad 2', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            { id: 'pop_ad_3', title: 'Watch Pop Ad 3', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            { id: 'pop_ad_4', title: 'Watch Pop Ad 4', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            { id: 'pop_ad_5', title: 'Watch Pop Ad 5', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            { id: 'pop_ad_6', title: 'Watch Pop Ad 6', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            { id: 'pop_ad_7', title: 'Watch Pop Ad 7', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            { id: 'pop_ad_8', title: 'Watch Pop Ad 8', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            { id: 'pop_ad_9', title: 'Watch Pop Ad 9', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            { id: 'pop_ad_10', title: 'Watch Pop Ad 10', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
+            
+            // Interstitial Ads - 20 coins each
+            { id: 'interstitial_ad_1', title: 'Watch Interstitial Ad 1', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
+            { id: 'interstitial_ad_2', title: 'Watch Interstitial Ad 2', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
+            { id: 'interstitial_ad_3', title: 'Watch Interstitial Ad 3', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
+            { id: 'interstitial_ad_4', title: 'Watch Interstitial Ad 4', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
+            { id: 'interstitial_ad_5', title: 'Watch Interstitial Ad 5', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
+            { id: 'interstitial_ad_6', title: 'Watch Interstitial Ad 6', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
+            { id: 'interstitial_ad_7', title: 'Watch Interstitial Ad 7', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
+            { id: 'interstitial_ad_8', title: 'Watch Interstitial Ad 8', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
+            { id: 'interstitial_ad_9', title: 'Watch Interstitial Ad 9', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
+            { id: 'interstitial_ad_10', title: 'Watch Interstitial Ad 10', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true }
+        ];
 
         // DOM Elements
         const appElement = document.getElementById('app');
@@ -1005,37 +1035,26 @@
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if we're in Telegram or a regular browser
             if (window.Telegram && Telegram.WebApp) {
-                // Telegram WebApp mode - show normal app
                 appElement.style.display = 'block';
                 adminPanel.style.display = 'none';
                 passwordModal.style.display = 'none';
                 initializeTelegramApp();
             } else {
-                // Regular browser mode - show password modal for admin access
                 appElement.style.display = 'none';
                 adminPanel.style.display = 'none';
                 passwordModal.style.display = 'flex';
                 initializeAdminAccess();
             }
             
-            // Initialize navigation
             initializeNavigation();
-            
-            // Initialize event listeners
             initializeEventListeners();
-            
-            // Initialize coin animation
             animateCoin();
-            
-            // Initialize interstitial ads
             initializeInterstitialAds();
         });
 
         // Initialize interstitial ads
         function initializeInterstitialAds() {
-            // Show interstitial ads with the specified settings
             show_9943956({ 
                 type: 'inApp', 
                 inAppSettings: { 
@@ -1052,7 +1071,7 @@
         function initializeAdminAccess() {
             submitPasswordBtn.addEventListener('click', function() {
                 const password = adminPasswordInput.value;
-                if (password === 'admin123') { // Hardcoded for demo - change in production!
+                if (password === 'admin123') {
                     passwordModal.style.display = 'none';
                     adminPanel.style.display = 'block';
                     initializeAdminPanel();
@@ -1061,7 +1080,6 @@
                 }
             });
             
-            // Also allow Enter key to submit password
             adminPasswordInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     submitPasswordBtn.click();
@@ -1074,27 +1092,21 @@
             Telegram.WebApp.ready();
             Telegram.WebApp.expand();
             
-            // Get user data from Telegram
             const user = Telegram.WebApp.initDataUnsafe?.user;
             if (user) {
                 userData.telegramId = user.id.toString();
                 userData.username = user.username || `user_${user.id}`;
                 userData.profilePic = user.photo_url || '';
                 
-                // Update profile display
                 updateProfileDisplay();
-                
-                // Authenticate with Firebase
                 authenticateUser();
             } else {
                 console.error('Unable to get user data from Telegram');
-                // Use mock data for testing
                 userData.telegramId = 'test_user_' + Math.floor(Math.random() * 10000);
                 userData.username = 'Test User';
                 authenticateUser();
             }
             
-            // Check for referral parameter
             checkReferral();
         }
 
@@ -1104,70 +1116,53 @@
             if (startParam && startParam.startsWith('ref_')) {
                 const referrerId = startParam.substring(4);
                 userData.referredBy = referrerId;
-                
-                // Credit referrer (this will happen when the user data is saved)
                 console.log(`User referred by: ${referrerId}`);
             }
         }
 
         // Firebase Authentication
         function authenticateUser() {
-            // For simplicity, we'll use anonymous auth
             auth.signInAnonymously()
                 .then(() => {
-                    // User is signed in
                     loadUserData();
                 })
                 .catch(error => {
                     console.error('Authentication error:', error);
-                    // Try to load from cache
                     loadFromCache();
                 });
         }
 
         // Load user data from Firebase with caching
         function loadUserData() {
-            // First, try to load from cache for immediate UI response
             loadFromCache();
             
-            // Then, try to load from Firebase
             if (userData.telegramId) {
                 db.collection('users').doc(userData.telegramId).get()
                     .then(doc => {
                         if (doc.exists) {
-                            // User exists, update data
                             const data = doc.data();
                             userData = { ...userData, ...data };
                             
-                            // Check if we need to reset daily taps
                             checkDailyReset();
-                            
-                            // Update UI
                             updateUI();
                             
-                            // Start countdown if limit was reached
                             if (userData.limitReachedTime) {
                                 startCountdown();
                             }
                             
-                            // Save to cache
                             saveToCache();
                         } else {
-                            // New user, create document
                             createUserDocument();
                         }
                         
-                        // Mark as online
                         setOnlineStatus(true);
                     })
                     .catch(error => {
                         console.error('Error loading user data:', error);
-                        // Mark as offline
                         setOnlineStatus(false);
                     });
             }
             
-            // Load other data
             loadConversionRate();
             loadTasks();
             loadWithdrawalHistory();
@@ -1175,27 +1170,25 @@
 
         // Create new user document in Firestore
         function createUserDocument() {
-            userData.coins = 100; // Starting bonus
+            userData.coins = 100;
             userData.totalCoins = 100;
             userData.level = 1;
             userData.tapsToday = 0;
             userData.lastTapDate = new Date();
             userData.limitReachedTime = null;
             userData.completedTasks = [];
+            userData.completedPopAds = 0;
+            userData.completedInterstitialAds = 0;
             
             db.collection('users').doc(userData.telegramId).set(userData)
                 .then(() => {
                     console.log('User document created');
                     
-                    // If referred, credit the referrer
                     if (userData.referredBy) {
                         creditReferrer();
                     }
                     
-                    // Update UI
                     updateUI();
-                    
-                    // Save to cache
                     saveToCache();
                 })
                 .catch(error => {
@@ -1233,14 +1226,12 @@
                     const cached = localStorage.getItem(`tap_earn_user_${userData.telegramId}`);
                     if (cached) {
                         const data = JSON.parse(cached);
-                        // Only update if we don't have newer data from Firebase
                         if (!userData.coins || userData.coins < data.coins) {
                             userData = { ...userData, ...data };
                         }
                         updateUI();
                     }
                     
-                    // Load withdrawals from cache
                     const cachedWithdrawals = localStorage.getItem(`tap_earn_withdrawals_${userData.telegramId}`);
                     if (cachedWithdrawals) {
                         userWithdrawals = JSON.parse(cachedWithdrawals);
@@ -1266,7 +1257,6 @@
 
         // Check if daily tap counter needs reset
         function checkDailyReset() {
-            // If user reached limit more than 24 hours ago, reset the counter
             if (userData.limitReachedTime) {
                 const limitTime = userData.limitReachedTime.seconds ? 
                     new Date(userData.limitReachedTime.seconds * 1000) : 
@@ -1276,40 +1266,30 @@
                 const hoursPassed = (now - limitTime) / (1000 * 60 * 60);
                 
                 if (hoursPassed >= 24) {
-                    // Reset the daily limit
                     userData.tapsToday = 0;
                     userData.limitReachedTime = null;
                     userData.lastTapDate = now;
                     
-                    // Re-enable tapping
                     tapCoin.classList.remove('disabled');
-                    
-                    // Hide countdown
                     countdownTimer.classList.add('hidden');
                     
-                    // Stop countdown interval
                     if (countdownInterval) {
                         clearInterval(countdownInterval);
                         countdownInterval = null;
                     }
                     
-                    // Save changes
                     updateUserData();
                 }
             }
             
-            // Also check for standard daily reset at midnight
             const now = new Date();
             const lastTapDate = userData.lastTapDate ? 
                 (userData.lastTapDate.seconds ? new Date(userData.lastTapDate.seconds * 1000) : new Date(userData.lastTapDate)) : 
                 new Date(0);
             
-            // Reset if it's a new day and limit wasn't reached
             if (lastTapDate.toDateString() !== now.toDateString() && !userData.limitReachedTime) {
                 userData.tapsToday = 0;
                 userData.lastTapDate = now;
-                
-                // Save changes
                 updateUserData();
             }
         }
@@ -1319,7 +1299,6 @@
             if (!userData.telegramId) return;
             
             if (!isOnline) {
-                // Queue for later sync
                 pendingActions.push({
                     type: 'updateUser',
                     data: userData
@@ -1327,7 +1306,6 @@
                 return;
             }
             
-            // Always save to cache first for immediate persistence
             saveToCache();
             
             db.collection('users').doc(userData.telegramId).set(userData, { merge: true })
@@ -1336,7 +1314,6 @@
                 })
                 .catch(error => {
                     console.error('Error updating user data:', error);
-                    // Queue for retry
                     pendingActions.push({
                         type: 'updateUser',
                         data: userData
@@ -1350,7 +1327,6 @@
             isOnline = online;
             if (online) {
                 offlineIndicator.classList.add('hidden');
-                // Process any pending actions
                 processPendingActions();
             } else {
                 offlineIndicator.classList.remove('hidden');
@@ -1371,7 +1347,6 @@
                             })
                             .catch(error => {
                                 console.error('Error processing pending action:', error);
-                                // Requeue if failed
                                 pendingActions.push(action);
                                 setOnlineStatus(false);
                             });
@@ -1379,7 +1354,6 @@
                     case 'createWithdrawal':
                         createWithdrawalRequest(action.data);
                         break;
-                    // Add other action types as needed
                 }
             });
         }
@@ -1389,14 +1363,10 @@
             coinsDisplay.textContent = userData.coins.toLocaleString();
             levelDisplay.textContent = userData.level;
             
-            // Update tap info
             const tapsLeft = Math.max(0, 1000 - userData.tapsToday);
             tapInfo.textContent = `Tap the coin to earn! (${userData.tapsToday}/1000 today)`;
             
-            // Update profile section
             updateProfileDisplay();
-            
-            // Update withdrawal equivalent
             updateUsdtEquivalent();
         }
 
@@ -1413,7 +1383,6 @@
             profileCoins.textContent = userData.coins.toLocaleString();
             profileLevel.textContent = userData.level;
             
-            // Update referral link with bot username
             if (userData.telegramId) {
                 referralLink.value = `https://t.me/TapEarn82_bot?start=ref_${userData.telegramId}`;
             }
@@ -1425,20 +1394,16 @@
                 item.addEventListener('click', function() {
                     const sectionId = this.getAttribute('data-section');
                     
-                    // Update active nav item
                     navItems.forEach(nav => nav.classList.remove('active'));
                     this.classList.add('active');
                     
-                    // Show corresponding section
                     sections.forEach(section => section.classList.remove('active'));
                     document.getElementById(sectionId).classList.add('active');
                     
-                    // Load withdrawal history when withdrawal section is activated
                     if (sectionId === 'withdrawal-section') {
                         loadWithdrawalHistory();
                     }
                     
-                    // Load tasks when tasks section is activated
                     if (sectionId === 'tasks-section') {
                         loadTasks();
                     }
@@ -1448,14 +1413,11 @@
 
         // Initialize event listeners
         function initializeEventListeners() {
-            // Tap coin event
             tapCoin.addEventListener('click', handleTap);
             
-            // Copy referral link
             copyReferralBtn.addEventListener('click', function() {
                 referralLink.select();
                 document.execCommand('copy');
-                // Show feedback
                 const originalText = this.textContent;
                 this.textContent = 'Copied!';
                 setTimeout(() => {
@@ -1463,10 +1425,8 @@
                 }, 2000);
             });
             
-            // Withdrawal amount change
             withdrawalAmount.addEventListener('input', updateUsdtEquivalent);
             
-            // Quick amount buttons
             document.querySelectorAll('.quick-amount').forEach(button => {
                 button.addEventListener('click', function() {
                     const amount = this.getAttribute('data-amount');
@@ -1475,13 +1435,11 @@
                 });
             });
             
-            // Withdrawal form submission
             withdrawalForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const walletAddress = document.getElementById('wallet-address').value;
                 const coinAmount = parseInt(withdrawalAmount.value);
                 
-                // Validate minimum amount
                 if (coinAmount < 30000) {
                     alert('Minimum withdrawal amount is 30,000 coins!');
                     return;
@@ -1495,9 +1453,7 @@
                 submitWithdrawalRequest(walletAddress, coinAmount);
             });
             
-            // Ad close button
             adClose.addEventListener('click', function() {
-                // If user tries to close ad early, show warning
                 if (adContainer.style.display === 'flex') {
                     if (confirm('If you close the ad now, you will not receive coins. Are you sure?')) {
                         adContainer.style.display = 'none';
@@ -1505,7 +1461,6 @@
                 }
             });
             
-            // Admin event listeners
             if (adminPanel.style.display !== 'none') {
                 initializeAdminEvents();
             }
@@ -1513,62 +1468,45 @@
 
         // Handle coin tap
         function handleTap() {
-            // Check if user has reached daily limit
             if (userData.tapsToday >= 1000) {
                 if (!userData.limitReachedTime) {
-                    // Set the time when limit was reached
                     userData.limitReachedTime = new Date();
                     startCountdown();
                 }
                 return;
             }
             
-            // Update user data
             userData.coins += 1;
             userData.totalCoins += 1;
             userData.tapsToday += 1;
             userData.lastTapDate = new Date();
             
-            // Check if user reached the limit with this tap
             if (userData.tapsToday >= 1000) {
                 userData.limitReachedTime = new Date();
                 startCountdown();
                 alert('Daily limit reached! You can tap again in 24 hours.');
             }
             
-            // Check for level up
             const newLevel = Math.floor(userData.totalCoins / 10000) + 1;
             if (newLevel > userData.level) {
                 userData.level = newLevel;
-                // Optional: Add level up bonus
                 userData.coins += 1000;
                 userData.totalCoins += 1000;
                 alert(`Level Up! You reached level ${newLevel} and received 1000 bonus coins!`);
             }
             
-            // Update UI
             updateUI();
-            
-            // Save to cache and Firebase
             saveToCache();
             updateUserData();
-            
-            // Create tap feedback animation
             createTapFeedback();
         }
 
         // Start 24-hour countdown timer
         function startCountdown() {
-            // Disable tapping
             tapCoin.classList.add('disabled');
-            
-            // Show countdown timer
             countdownTimer.classList.remove('hidden');
-            
-            // Update countdown immediately
             updateCountdown();
             
-            // Set interval to update countdown every second
             if (countdownInterval) {
                 clearInterval(countdownInterval);
             }
@@ -1588,36 +1526,25 @@
             const timeDiff = limitTime.getTime() + (24 * 60 * 60 * 1000) - now.getTime();
             
             if (timeDiff <= 0) {
-                // Countdown finished, reset daily limit
                 userData.tapsToday = 0;
                 userData.limitReachedTime = null;
                 userData.lastTapDate = now;
                 
-                // Re-enable tapping
                 tapCoin.classList.remove('disabled');
-                
-                // Hide countdown
                 countdownTimer.classList.add('hidden');
                 
-                // Stop countdown interval
                 clearInterval(countdownInterval);
                 countdownInterval = null;
                 
-                // Update UI
                 updateUI();
-                
-                // Save changes
                 updateUserData();
-                
                 return;
             }
             
-            // Calculate hours, minutes, seconds
             const hours = Math.floor(timeDiff / (1000 * 60 * 60));
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
             
-            // Update countdown display
             countdownTimer.textContent = `Next tap available in: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
@@ -1627,7 +1554,6 @@
             feedback.className = 'tap-feedback';
             feedback.textContent = '+1';
             
-            // Position the feedback at the center of the coin
             const coinRect = tapCoin.getBoundingClientRect();
             const coinCenterX = coinRect.left + coinRect.width / 2;
             const coinCenterY = coinRect.top + coinRect.height / 2;
@@ -1637,7 +1563,6 @@
             
             document.body.appendChild(feedback);
             
-            // Remove after animation
             setTimeout(() => {
                 document.body.removeChild(feedback);
             }, 1000);
@@ -1645,7 +1570,6 @@
 
         // Animate the coin
         function animateCoin() {
-            // Add a subtle pulse animation to make the coin more appealing
             tapCoin.style.animation = 'bounce 2s infinite, pulse 3s infinite';
         }
 
@@ -1688,20 +1612,38 @@
                         tasks.push({ id: doc.id, ...doc.data() });
                     });
                     
+                    // Add default ad tasks if no tasks exist
+                    if (tasks.length === 0) {
+                        tasks = [...defaultAdTasks];
+                    }
+                    
                     // Filter out completed tasks
-                    tasks = tasks.filter(task => !userData.completedTasks.includes(task.id));
+                    tasks = tasks.filter(task => {
+                        if (task.type === 'pop_ad') {
+                            return userData.completedPopAds < 10;
+                        } else if (task.type === 'interstitial_ad') {
+                            return userData.completedInterstitialAds < 10;
+                        } else {
+                            return !userData.completedTasks.includes(task.id);
+                        }
+                    });
                     
                     renderTasks();
                 })
                 .catch(error => {
                     console.error('Error loading tasks:', error);
-                    // Try to load from cache if online fails
-                    const cachedTasks = localStorage.getItem('tap_earn_tasks');
-                    if (cachedTasks) {
-                        tasks = JSON.parse(cachedTasks);
-                        tasks = tasks.filter(task => !userData.completedTasks.includes(task.id));
-                        renderTasks();
-                    }
+                    // Use default tasks if online fails
+                    tasks = [...defaultAdTasks];
+                    tasks = tasks.filter(task => {
+                        if (task.type === 'pop_ad') {
+                            return userData.completedPopAds < 10;
+                        } else if (task.type === 'interstitial_ad') {
+                            return userData.completedInterstitialAds < 10;
+                        } else {
+                            return !userData.completedTasks.includes(task.id);
+                        }
+                    });
+                    renderTasks();
                 });
         }
 
@@ -1720,6 +1662,7 @@
                 
                 let buttonText = 'Start';
                 let buttonAction = '';
+                let badge = '';
                 
                 switch (task.type) {
                     case 'url':
@@ -1730,14 +1673,24 @@
                         buttonText = 'Join';
                         break;
                     case 'ad':
-                        buttonAction = `watchRewardedAd('${task.id}')`;
+                        buttonAction = `watchAd('${task.id}')`;
                         buttonText = 'Watch';
+                        break;
+                    case 'pop_ad':
+                        buttonAction = `watchPopAd('${task.id}')`;
+                        buttonText = 'Watch';
+                        badge = '<span class="ad-badge">POP AD</span>';
+                        break;
+                    case 'interstitial_ad':
+                        buttonAction = `watchInterstitialAd('${task.id}')`;
+                        buttonText = 'Watch';
+                        badge = '<span class="ad-badge interstitial-badge">INTERSTITIAL</span>';
                         break;
                 }
                 
                 taskElement.innerHTML = `
                     <div class="task-info">
-                        <div class="task-title">${task.title} <span class="task-reward">+${task.reward}</span></div>
+                        <div class="task-title">${task.title} ${badge}<span class="task-reward">+${task.reward}</span></div>
                         <div class="task-description">${task.description}</div>
                     </div>
                     <button class="btn" onclick="${buttonAction}">${buttonText}</button>
@@ -1746,7 +1699,6 @@
                 tasksList.appendChild(taskElement);
             });
             
-            // Cache tasks for offline use
             localStorage.setItem('tap_earn_tasks', JSON.stringify(tasks));
         }
 
@@ -1755,10 +1707,8 @@
             const task = tasks.find(t => t.id === taskId);
             if (!task) return;
             
-            // Open the URL
             window.open(task.target, '_blank');
             
-            // Automatically complete the task after a short delay
             setTimeout(() => {
                 completeTask(taskId);
             }, 2000);
@@ -1772,14 +1722,12 @@
             if (window.Telegram && Telegram.WebApp) {
                 Telegram.WebApp.openTelegramLink(`https://t.me/${channelId}`);
                 
-                // Automatically complete after delay (since we can't verify)
                 setTimeout(() => {
                     completeTask(taskId);
                 }, 3000);
             } else {
                 window.open(`https://t.me/${channelId}`, '_blank');
                 
-                // Automatically complete after delay
                 setTimeout(() => {
                     completeTask(taskId);
                 }, 3000);
@@ -1787,16 +1735,25 @@
         }
 
         // Watch rewarded ad
-        function watchRewardedAd(taskId) {
+        function watchPopAd(taskId) {
             currentAdTaskId = taskId;
             
-            // Use the monotag rewarded ad function
             show_9943956('pop').then(() => {
-                // User watched the ad till the end
                 completeTask(taskId);
             }).catch(e => {
-                // User got error during playing ad or closed it
                 console.error('Ad error:', e);
+                alert('Ad was not completed. Please try again.');
+            });
+        }
+
+        // Watch interstitial ad
+        function watchInterstitialAd(taskId) {
+            currentAdTaskId = taskId;
+            
+            show_9943956({ type: 'inApp' }).then(() => {
+                completeTask(taskId);
+            }).catch(e => {
+                console.error('Interstitial ad error:', e);
                 alert('Ad was not completed. Please try again.');
             });
         }
@@ -1807,10 +1764,8 @@
             const task = tasks.find(t => t.id === taskId);
             if (!task) return;
             
-            // Show ad container
             adContainer.style.display = 'flex';
             
-            // Start countdown
             let seconds = 5;
             adTimer.textContent = seconds;
             
@@ -1831,7 +1786,15 @@
             const task = tasks.find(t => t.id === taskId);
             if (!task) return;
             
-            // Check if already completed
+            // Check if already completed for ad tasks
+            if (task.type === 'pop_ad' && userData.completedPopAds >= 10) {
+                return;
+            }
+            
+            if (task.type === 'interstitial_ad' && userData.completedInterstitialAds >= 10) {
+                return;
+            }
+            
             if (userData.completedTasks.includes(taskId)) {
                 return;
             }
@@ -1839,7 +1802,15 @@
             // Reward user
             userData.coins += task.reward;
             userData.totalCoins += task.reward;
-            userData.completedTasks.push(taskId);
+            
+            // Track completion
+            if (task.type === 'pop_ad') {
+                userData.completedPopAds = (userData.completedPopAds || 0) + 1;
+            } else if (task.type === 'interstitial_ad') {
+                userData.completedInterstitialAds = (userData.completedInterstitialAds || 0) + 1;
+            } else {
+                userData.completedTasks.push(taskId);
+            }
             
             // Update UI
             updateUI();
@@ -1848,8 +1819,11 @@
             saveToCache();
             updateUserData();
             
-            // Remove task from view
-            tasks = tasks.filter(t => t.id !== taskId);
+            // Remove task from view if it's not an ad task
+            if (task.type !== 'pop_ad' && task.type !== 'interstitial_ad') {
+                tasks = tasks.filter(t => t.id !== taskId);
+            }
+            
             renderTasks();
             
             alert(`Task completed! You earned ${task.reward} coins.`);
@@ -1859,17 +1833,14 @@
         function submitWithdrawalRequest(walletAddress, coinAmount) {
             const usdtValue = coinAmount * conversionRate;
             
-            // Check if user has enough coins
             if (userData.coins < coinAmount) {
                 alert('Insufficient coins for this withdrawal!');
                 return;
             }
             
-            // Deduct coins immediately
             userData.coins -= coinAmount;
             updateUI();
             
-            // Save user data
             saveToCache();
             updateUserData();
             
@@ -1883,7 +1854,6 @@
                 timestamp: new Date()
             };
             
-            // Add to local history immediately
             userWithdrawals.unshift(withdrawalData);
             renderWithdrawalHistory();
             saveToCache();
@@ -1905,7 +1875,6 @@
         function createWithdrawalRequest(withdrawalData) {
             db.collection('withdrawals').add(withdrawalData)
                 .then((docRef) => {
-                    // Update local record with Firebase ID
                     const index = userWithdrawals.findIndex(w => 
                         w.timestamp.getTime() === withdrawalData.timestamp.getTime()
                     );
@@ -1920,12 +1889,10 @@
                 })
                 .catch(error => {
                     console.error('Error creating withdrawal request:', error);
-                    // Refund coins if submission failed
                     userData.coins += withdrawalData.coinAmount;
                     updateUI();
                     updateUserData();
                     
-                    // Remove from local history
                     const index = userWithdrawals.findIndex(w => 
                         w.timestamp.getTime() === withdrawalData.timestamp.getTime()
                     );
@@ -1943,10 +1910,8 @@
         function loadWithdrawalHistory() {
             if (!userData.telegramId) return;
             
-            // First load from cache for immediate display
             renderWithdrawalHistory();
             
-            // Then try to load from Firebase
             db.collection('withdrawals')
                 .where('userId', '==', userData.telegramId)
                 .orderBy('timestamp', 'desc')
@@ -1956,7 +1921,6 @@
                     querySnapshot.forEach(doc => {
                         const data = doc.data();
                         data.id = doc.id;
-                        // Convert Firestore timestamp to Date
                         data.timestamp = data.timestamp.toDate();
                         userWithdrawals.push(data);
                     });
@@ -1965,7 +1929,6 @@
                 })
                 .catch(error => {
                     console.error('Error loading withdrawal history:', error);
-                    // Continue with cached data
                 });
         }
 
@@ -1998,26 +1961,21 @@
             loadAdminWithdrawals();
             loadAdminTasks();
             initializeAdminEvents();
-            
-            // Set up real-time listeners for admin panel
             setupAdminRealTimeListeners();
         }
 
         function setupAdminRealTimeListeners() {
-            // Real-time listener for withdrawals
             db.collection('withdrawals')
                 .orderBy('timestamp', 'desc')
                 .onSnapshot(querySnapshot => {
                     loadAdminWithdrawals();
                 });
             
-            // Real-time listener for tasks
             db.collection('tasks')
                 .onSnapshot(querySnapshot => {
                     loadAdminTasks();
                 });
             
-            // Real-time listener for users
             db.collection('users')
                 .onSnapshot(querySnapshot => {
                     loadAdminStatistics();
@@ -2025,25 +1983,21 @@
         }
 
         function initializeAdminEvents() {
-            // Task form submission
             taskForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 addTask();
             });
             
-            // Update exchange rate
             updateRateBtn.addEventListener('click', function() {
                 updateExchangeRate();
             });
         }
 
         function loadAdminStatistics() {
-            // Load total users
             db.collection('users').get()
                 .then(querySnapshot => {
                     totalUsers.textContent = querySnapshot.size;
                     
-                    // Calculate total coins
                     let total = 0;
                     querySnapshot.forEach(doc => {
                         total += doc.data().coins || 0;
@@ -2147,7 +2101,6 @@
                 .then(() => {
                     alert('Task added successfully!');
                     taskForm.reset();
-                    // No need to call loadAdminTasks() here because real-time listener will update
                 })
                 .catch(error => {
                     console.error('Error adding task:', error);
@@ -2177,15 +2130,13 @@
             });
         }
 
-        // These functions would be called from the admin panel buttons
+        // Admin functions
         window.approveWithdrawal = function(withdrawalId, coinAmount, userId) {
-            // Update withdrawal status to approved
             db.collection('withdrawals').doc(withdrawalId).update({
                 status: 'Approved'
             })
             .then(() => {
                 alert('Withdrawal approved!');
-                // No need to call loadAdminWithdrawals() here because real-time listener will update
             })
             .catch(error => {
                 console.error('Error approving withdrawal:', error);
@@ -2194,19 +2145,16 @@
         };
 
         window.rejectWithdrawal = function(withdrawalId, userId, coinAmount) {
-            // First get the withdrawal data to refund coins
             db.collection('withdrawals').doc(withdrawalId).get()
                 .then(doc => {
                     if (!doc.exists) return;
                     
                     const data = doc.data();
                     
-                    // Refund coins to user
                     return db.collection('users').doc(userId).update({
                         coins: firebase.firestore.FieldValue.increment(coinAmount)
                     })
                     .then(() => {
-                        // Update withdrawal status to rejected
                         return db.collection('withdrawals').doc(withdrawalId).update({
                             status: 'Rejected'
                         });
@@ -2214,7 +2162,6 @@
                 })
                 .then(() => {
                     alert('Withdrawal rejected and coins refunded!');
-                    // No need to call loadAdminWithdrawals() here because real-time listener will update
                 })
                 .catch(error => {
                     console.error('Error rejecting withdrawal:', error);
@@ -2228,7 +2175,6 @@
             })
             .then(() => {
                 alert(`Task ${newStatus ? 'activated' : 'deactivated'}!`);
-                // No need to call loadAdminTasks() here because real-time listener will update
             })
             .catch(error => {
                 console.error('Error toggling task:', error);
@@ -2241,7 +2187,6 @@
                 db.collection('tasks').doc(taskId).delete()
                 .then(() => {
                     alert('Task deleted!');
-                    // No need to call loadAdminTasks() here because real-time listener will update
                 })
                 .catch(error => {
                     console.error('Error deleting task:', error);
