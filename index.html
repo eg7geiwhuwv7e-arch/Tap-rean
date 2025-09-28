@@ -976,9 +976,7 @@
             lastTapDate: null,
             limitReachedTime: null,
             referredBy: null,
-            completedTasks: [],
-            completedPopAds: 0,
-            completedInterstitialAds: 0
+            completedTasks: []
         };
 
         let conversionRate = 0.000036;
@@ -988,6 +986,46 @@
         let userWithdrawals = [];
         let currentAdTaskId = null;
         let countdownInterval = null;
+
+        // Default ad tasks that will always be available
+        const defaultAdTasks = [
+            {
+                id: 'pop_ad_1',
+                title: 'Watch Pop Ad 1',
+                description: 'Watch a short pop ad to earn coins',
+                reward: 10,
+                type: 'pop_ad',
+                target: 'pop',
+                isActive: true
+            },
+            {
+                id: 'pop_ad_2', 
+                title: 'Watch Pop Ad 2',
+                description: 'Watch a short pop ad to earn coins',
+                reward: 10,
+                type: 'pop_ad',
+                target: 'pop',
+                isActive: true
+            },
+            {
+                id: 'interstitial_ad_1',
+                title: 'Watch Interstitial Ad 1',
+                description: 'Watch a full-screen interstitial ad',
+                reward: 20,
+                type: 'interstitial_ad',
+                target: 'interstitial',
+                isActive: true
+            },
+            {
+                id: 'interstitial_ad_2',
+                title: 'Watch Interstitial Ad 2',
+                description: 'Watch a full-screen interstitial ad',
+                reward: 20,
+                type: 'interstitial_ad',
+                target: 'interstitial',
+                isActive: true
+            }
+        ];
 
         // DOM Elements
         const appElement = document.getElementById('app');
@@ -1054,18 +1092,21 @@
             initializeInterstitialAds();
         });
 
-        // Initialize interstitial ads
+        // Initialize interstitial ads using Monotag
         function initializeInterstitialAds() {
-            show_9943956({ 
-                type: 'inApp', 
-                inAppSettings: { 
-                    frequency: 2, 
-                    capping: 0.1, 
-                    interval: 30, 
-                    timeout: 5, 
-                    everyPage: false 
-                } 
-            });
+            // This will show interstitial ads automatically with the specified settings
+            if (typeof show_9943956 === 'function') {
+                show_9943956({ 
+                    type: 'inApp', 
+                    inAppSettings: { 
+                        frequency: 2, 
+                        capping: 0.1, 
+                        interval: 30, 
+                        timeout: 5, 
+                        everyPage: false 
+                    } 
+                });
+            }
         }
 
         // Initialize admin access with password
@@ -1178,8 +1219,6 @@
             userData.lastTapDate = new Date();
             userData.limitReachedTime = null;
             userData.completedTasks = [];
-            userData.completedPopAds = 0;
-            userData.completedInterstitialAds = 0;
             
             db.collection('users').doc(userData.telegramId).set(userData)
                 .then(() => {
@@ -1606,47 +1645,35 @@
 
         // Load tasks from Firebase - FIXED VERSION
         function loadTasks() {
-            console.log('Loading tasks from Firebase...');
+            console.log('Loading tasks...');
             
+            // Always include default ad tasks
+            let combinedTasks = [...defaultAdTasks];
+            
+            // Try to load additional tasks from Firebase
             db.collection('tasks').where('isActive', '==', true).get()
                 .then(querySnapshot => {
-                    tasks = [];
                     querySnapshot.forEach(doc => {
                         const taskData = { id: doc.id, ...doc.data() };
-                        tasks.push(taskData);
-                    });
-                    
-                    console.log(`Loaded ${tasks.length} tasks from Firebase:`, tasks);
-                    
-                    // Filter out completed tasks
-                    const filteredTasks = tasks.filter(task => {
-                        if (task.type === 'pop_ad') {
-                            return !userData.completedTasks.includes(task.id);
-                        } else if (task.type === 'interstitial_ad') {
-                            return !userData.completedTasks.includes(task.id);
-                        } else {
-                            return !userData.completedTasks.includes(task.id);
+                        // Only add if not already in default tasks
+                        if (!combinedTasks.some(task => task.id === taskData.id)) {
+                            combinedTasks.push(taskData);
                         }
                     });
                     
-                    tasks = filteredTasks;
-                    console.log(`After filtering: ${tasks.length} tasks available`);
+                    console.log('Total tasks found:', combinedTasks.length);
                     
+                    // Filter out completed tasks
+                    tasks = combinedTasks.filter(task => !userData.completedTasks.includes(task.id));
+                    
+                    console.log('Tasks after filtering:', tasks.length);
                     renderTasks();
                 })
                 .catch(error => {
                     console.error('Error loading tasks from Firebase:', error);
-                    
-                    // Try to load from cache if online fails
-                    const cachedTasks = localStorage.getItem('tap_earn_tasks');
-                    if (cachedTasks) {
-                        tasks = JSON.parse(cachedTasks);
-                        const filteredTasks = tasks.filter(task => !userData.completedTasks.includes(task.id));
-                        tasks = filteredTasks;
-                        renderTasks();
-                    } else {
-                        tasksList.innerHTML = '<div class="card text-center">No tasks available at the moment. Check back later!</div>';
-                    }
+                    // If Firebase fails, just use default tasks
+                    tasks = defaultAdTasks.filter(task => !userData.completedTasks.includes(task.id));
+                    renderTasks();
                 });
         }
 
@@ -1702,9 +1729,6 @@
                 
                 tasksList.appendChild(taskElement);
             });
-            
-            // Cache tasks for offline use
-            localStorage.setItem('tap_earn_tasks', JSON.stringify(tasks));
         }
 
         // Complete URL task
@@ -1739,28 +1763,40 @@
             }
         }
 
-        // Watch rewarded ad
+        // Watch rewarded ad using Monotag
         function watchPopAd(taskId) {
             currentAdTaskId = taskId;
             
-            show_9943956('pop').then(() => {
-                completeTask(taskId);
-            }).catch(e => {
-                console.error('Ad error:', e);
-                alert('Ad was not completed. Please try again.');
-            });
+            if (typeof show_9943956 === 'function') {
+                show_9943956('pop').then(() => {
+                    // User watched the ad till the end
+                    completeTask(taskId);
+                }).catch(e => {
+                    // User got error during playing ad or closed it
+                    console.error('Ad error:', e);
+                    alert('Ad was not completed. Please try again.');
+                });
+            } else {
+                alert('Ad system not available. Please try again later.');
+            }
         }
 
-        // Watch interstitial ad
+        // Watch interstitial ad using Monotag
         function watchInterstitialAd(taskId) {
             currentAdTaskId = taskId;
             
-            show_9943956({ type: 'inApp' }).then(() => {
-                completeTask(taskId);
-            }).catch(e => {
-                console.error('Interstitial ad error:', e);
-                alert('Ad was not completed. Please try again.');
-            });
+            if (typeof show_9943956 === 'function') {
+                show_9943956({ type: 'inApp' }).then(() => {
+                    // User watched the ad till the end
+                    completeTask(taskId);
+                }).catch(e => {
+                    // User got error during playing ad or closed it
+                    console.error('Interstitial ad error:', e);
+                    alert('Ad was not completed. Please try again.');
+                });
+            } else {
+                alert('Ad system not available. Please try again later.');
+            }
         }
 
         // Watch ad (with timer) - kept for backward compatibility
