@@ -659,6 +659,9 @@
     
     <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- Monotag Ads SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='9943956' data-sdk='show_9943956'></script>
 </head>
 <body>
     <!-- Password Modal for Admin -->
@@ -921,13 +924,13 @@
     <script>
         // Firebase Configuration (Replace with your actual config)
         const firebaseConfig = {
-  apiKey: "AIzaSyAPoCeD2tC-LVkXGLpm6Whp1HdF3kA18Bg",
-  authDomain: "mybota-a1c57.firebaseapp.com",
-  projectId: "mybota-a1c57",
-  storageBucket: "mybota-a1c57.firebasestorage.app",
-  messagingSenderId: "1097209841071",
-  appId: "1:1097209841071:web:15832f1359084f8ae99b5a"
-};
+            apiKey: "AIzaSyC4wGDrMTa6e3Vi11z1Z6Q1aX9QkLd0Y3M",
+            authDomain: "tap-earn-7d4f3.firebaseapp.com",
+            projectId: "tap-earn-7d4f3",
+            storageBucket: "tap-earn-7d4f3.firebasestorage.app",
+            messagingSenderId: "1062704996981",
+            appId: "1:1062704996981:web:3c4b4c8b0c8e7f0e22c8a5"
+        };
 
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -956,6 +959,8 @@
         let userWithdrawals = [];
         let currentAdTaskId = null;
         let countdownInterval = null;
+        let adShownCount = 0;
+        let lastAdShownTime = 0;
 
         // DOM Elements
         const appElement = document.getElementById('app');
@@ -1023,7 +1028,25 @@
             
             // Initialize coin animation
             animateCoin();
+            
+            // Initialize interstitial ads
+            initializeInterstitialAds();
         });
+
+        // Initialize interstitial ads
+        function initializeInterstitialAds() {
+            // Show interstitial ads with the specified settings
+            show_9943956({ 
+                type: 'inApp', 
+                inAppSettings: { 
+                    frequency: 2, 
+                    capping: 0.1, 
+                    interval: 30, 
+                    timeout: 5, 
+                    everyPage: false 
+                } 
+            });
+        }
 
         // Initialize admin access with password
         function initializeAdminAccess() {
@@ -1390,9 +1413,9 @@
             profileCoins.textContent = userData.coins.toLocaleString();
             profileLevel.textContent = userData.level;
             
-            // Update referral link
+            // Update referral link with bot username
             if (userData.telegramId) {
-                referralLink.value = `https://t.me/YourBot?start=ref_${userData.telegramId}`;
+                referralLink.value = `https://t.me/TapEarn82_bot?start=ref_${userData.telegramId}`;
             }
         }
 
@@ -1707,7 +1730,7 @@
                         buttonText = 'Join';
                         break;
                     case 'ad':
-                        buttonAction = `watchAd('${task.id}')`;
+                        buttonAction = `watchRewardedAd('${task.id}')`;
                         buttonText = 'Watch';
                         break;
                 }
@@ -1763,7 +1786,22 @@
             }
         }
 
-        // Watch ad (with timer)
+        // Watch rewarded ad
+        function watchRewardedAd(taskId) {
+            currentAdTaskId = taskId;
+            
+            // Use the monotag rewarded ad function
+            show_9943956('pop').then(() => {
+                // User watched the ad till the end
+                completeTask(taskId);
+            }).catch(e => {
+                // User got error during playing ad or closed it
+                console.error('Ad error:', e);
+                alert('Ad was not completed. Please try again.');
+            });
+        }
+
+        // Watch ad (with timer) - kept for backward compatibility
         function watchAd(taskId) {
             currentAdTaskId = taskId;
             const task = tasks.find(t => t.id === taskId);
