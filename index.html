@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TAP & EARN</title>
     <style>
         * {
@@ -10,11 +10,24 @@
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        html, body {
+            touch-action: manipulation;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            position: fixed;
         }
 
         :root {
-            --bg-primary: #121212;
-            --bg-secondary: #1e1e1e;
+            --bg-primary: rgba(18, 18, 18, 0.85);
+            --bg-secondary: rgba(30, 30, 30, 0.9);
             --accent: #00d4ff;
             --accent-secondary: #7b61ff;
             --text-primary: #ffffff;
@@ -25,11 +38,16 @@
 
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-primary);
+            background: url('https://i.ibb.co/mrc93NWL/image.jpg') no-repeat center center fixed;
+            background-size: cover;
             color: var(--text-primary);
             line-height: 1.5;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         .container {
@@ -54,6 +72,7 @@
             padding: 20px;
             margin-bottom: 15px;
             box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
         }
 
         .btn {
@@ -97,6 +116,7 @@
             padding: 10px 0;
             border-top: 1px solid #333;
             z-index: 1000;
+            backdrop-filter: blur(10px);
         }
 
         .nav-item {
@@ -118,8 +138,11 @@
         }
 
         .nav-icon {
-            font-size: 20px;
+            width: 24px;
+            height: 24px;
             margin-bottom: 4px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .nav-label {
@@ -134,6 +157,17 @@
             padding: 10px 0;
         }
 
+        .app-title {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #00d4ff 0%, #7b61ff 50%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(0, 212, 255, 0.3);
+            letter-spacing: 1px;
+        }
+
         .stats {
             display: flex;
             gap: 15px;
@@ -145,6 +179,7 @@
             border-radius: var(--border-radius);
             text-align: center;
             min-width: 80px;
+            backdrop-filter: blur(10px);
         }
 
         .stat-value {
@@ -168,33 +203,37 @@
         }
 
         .coin {
-            width: 150px;
-            height: 150px;
-            background: linear-gradient(135deg, #26a17b 0%, #1e7e5c 100%);
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 60px;
             cursor: pointer;
-            box-shadow: 0 10px 30px rgba(38, 161, 123, 0.4);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
             position: relative;
             user-select: none;
             transition: transform 0.1s, box-shadow 0.1s;
             -webkit-tap-highlight-color: transparent;
             outline: none;
+            overflow: hidden;
+            border: 4px solid #00d4ff;
+        }
+
+        .coin-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .coin:active {
             transform: scale(0.92);
-            box-shadow: 0 5px 15px rgba(38, 161, 123, 0.6);
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.6);
         }
 
         .coin.disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
-            box-shadow: 0 10px 30px rgba(38, 161, 123, 0.4) !important;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4) !important;
         }
 
         .tap-feedback {
@@ -222,6 +261,7 @@
             font-size: 16px;
             color: var(--accent);
             font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
         .tasks-list {
@@ -237,6 +277,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            backdrop-filter: blur(10px);
         }
 
         .task-info {
@@ -275,6 +316,15 @@
             align-items: center;
             justify-content: center;
             font-size: 40px;
+            overflow: hidden;
+            border: 2px solid var(--accent);
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .profile-info {
@@ -319,6 +369,7 @@
             padding: 15px;
             background-color: var(--bg-secondary);
             border-radius: var(--border-radius);
+            backdrop-filter: blur(10px);
         }
 
         .withdrawal-form {
@@ -449,13 +500,13 @@
 
         @keyframes pulse {
             0% {
-                box-shadow: 0 10px 30px rgba(38, 161, 123, 0.4);
+                box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
             }
             50% {
-                box-shadow: 0 10px 40px rgba(38, 161, 123, 0.7);
+                box-shadow: 0 10px 40px rgba(0, 212, 255, 0.7);
             }
             100% {
-                box-shadow: 0 10px 30px rgba(38, 161, 123, 0.4);
+                box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
             }
         }
 
@@ -500,6 +551,7 @@
             border-radius: var(--border-radius);
             width: 90%;
             max-width: 400px;
+            backdrop-filter: blur(10px);
         }
 
         .modal h2 {
@@ -663,6 +715,75 @@
         .ad-task-form .full-width {
             grid-column: 1 / -1;
         }
+
+        /* New styles for enhanced features */
+        .level-progress {
+            margin-top: 15px;
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .coin-bonus {
+            font-size: 12px;
+            color: var(--accent);
+            margin-top: 5px;
+        }
+
+        .coin-display {
+            font-size: 28px;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .coin-display.increase {
+            animation: coinPulse 0.5s ease;
+        }
+
+        @keyframes coinPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .tasks-reset-timer {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .tasks-reset-timer.hidden {
+            display: none;
+        }
     </style>
     
     <!-- Firebase SDK -->
@@ -691,8 +812,8 @@
         <button class="ad-close" id="ad-close">✕</button>
         <div class="ad-content">
             <h2>Watch Ad to Earn Coins</h2>
-            <p>Please watch this ad for 5 seconds to earn your reward</p>
-            <div class="ad-timer" id="ad-timer">5</div>
+            <p id="ad-message">Please watch this ad for 10 seconds to earn your reward</p>
+            <div class="ad-timer" id="ad-timer">10</div>
             <p>Do not close this window until the timer completes</p>
         </div>
     </div>
@@ -703,15 +824,19 @@
         <section id="tap-section" class="section active">
             <div class="container">
                 <div class="header">
-                    <h1>💰 TAP & EARN</h1>
+                    <h1 class="app-title">TAP & EARN</h1>
                     <div class="stats">
                         <div class="stat-item">
-                            <div class="stat-value" id="coins-display">0</div>
+                            <div class="coin-display" id="coins-display">0</div>
                             <div class="stat-label">Coins</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-value" id="level-display">1</div>
                             <div class="stat-label">Level</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="taps-per-second">1.0</div>
+                            <div class="stat-label">Coins/Tap</div>
                         </div>
                     </div>
                 </div>
@@ -719,9 +844,22 @@
                 <div class="tap-area">
                     <div class="coin" id="tap-coin">
                         <div class="coin-glow"></div>
-                        💎
+                        <img src="https://i.ibb.co/CpQM52FW/image.jpg" alt="Tap Coin" class="coin-image">
                     </div>
                     <div class="tap-info" id="tap-info">Tap the coin to earn! (0/1000 today)</div>
+                    
+                    <!-- Level Progress -->
+                    <div class="level-progress">
+                        <div class="level-info">
+                            <span>Level <span id="current-level">1</span></span>
+                            <span><span id="current-taps">0</span> / <span id="required-taps">10000</span> Taps</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="level-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="coin-bonus" id="coin-bonus">Next Level: 1.1 coins/tap</div>
+                    </div>
+                    
                     <div class="countdown-timer hidden" id="countdown-timer">Next tap available in: 24:00:00</div>
                 </div>
             </div>
@@ -731,6 +869,13 @@
         <section id="tasks-section" class="section">
             <div class="container">
                 <h1 class="mb-20">🎯 Tasks</h1>
+                
+                <!-- Tasks Reset Timer -->
+                <div class="tasks-reset-timer hidden" id="tasks-reset-timer">
+                    <h3>All Tasks Completed!</h3>
+                    <p>New tasks available in: <span id="tasks-timer">24:00:00</span></p>
+                </div>
+                
                 <div class="tasks-list" id="tasks-list">
                     <!-- Tasks will be populated by JavaScript -->
                 </div>
@@ -741,7 +886,9 @@
         <section id="profile-section" class="section">
             <div class="container">
                 <div class="profile-header">
-                    <div class="profile-pic" id="profile-pic">👤</div>
+                    <div class="profile-pic" id="profile-pic">
+                        <img src="https://i.ibb.co/0RFyTvZH/image.jpg" alt="Profile">
+                    </div>
                     <div class="profile-info">
                         <h2 id="profile-name">User</h2>
                         <div class="profile-id" id="profile-id">ID: ...</div>
@@ -751,12 +898,16 @@
                 <div class="card">
                     <div class="stats">
                         <div class="stat-item">
-                            <div class="stat-value" id="profile-coins">0</div>
+                            <div class="coin-display" id="profile-coins">0</div>
                             <div class="stat-label">Coins</div>
                         </div>
                         <div class="stat-item">
                             <div class="stat-value" id="profile-level">1</div>
                             <div class="stat-label">Level</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="profile-taps">0</div>
+                            <div class="stat-label">Total Taps</div>
                         </div>
                     </div>
                 </div>
@@ -831,19 +982,19 @@
         <!-- Bottom Navigation -->
         <nav class="bottom-nav">
             <div class="nav-item active" data-section="tap-section">
-                <div class="nav-icon">💰</div>
+                <img src="https://i.ibb.co/CpQM52FW/image.jpg" alt="Tap" class="nav-icon">
                 <div class="nav-label">Tap</div>
             </div>
             <div class="nav-item" data-section="tasks-section">
-                <div class="nav-icon">🎯</div>
+                <img src="https://i.ibb.co/PvT9vz1p/image.jpg" alt="Tasks" class="nav-icon">
                 <div class="nav-label">Tasks</div>
             </div>
             <div class="nav-item" data-section="profile-section">
-                <div class="nav-icon">👤</div>
+                <img src="https://i.ibb.co/0RFyTvZH/image.jpg" alt="Profile" class="nav-icon">
                 <div class="nav-label">Profile</div>
             </div>
             <div class="nav-item" data-section="withdrawal-section">
-                <div class="nav-icon">💳</div>
+                <img src="https://i.ibb.co/5gfVhwqR/image.jpg" alt="Withdraw" class="nav-icon">
                 <div class="nav-label">Withdraw</div>
             </div>
         </nav>
@@ -958,6 +1109,7 @@
   messagingSenderId: "1097209841071",
   appId: "1:1097209841071:web:15832f1359084f8ae99b5a"
 };
+
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -975,8 +1127,51 @@
             lastTapDate: null,
             limitReachedTime: null,
             referredBy: null,
-            completedTasks: []
+            completedTasks: [],
+            lastUpdated: null,
+            totalTaps: 0, // New field to track total taps for leveling
+            tasksCompletedAt: null // New field to track when all tasks were completed
         };
+
+        // Level System Configuration
+        const levelRequirements = [
+            0,     // Level 1: 0 taps
+            10000, // Level 2: 10,000 taps
+            30000, // Level 3: 30,000 taps
+            60000, // Level 4: 60,000 taps
+            100000, // Level 5: 100,000 taps
+            150000, // Level 6: 150,000 taps
+            210000, // Level 7: 210,000 taps
+            280000, // Level 8: 280,000 taps
+            360000, // Level 9: 360,000 taps
+            450000  // Level 10: 450,000 taps
+        ];
+
+        const coinsPerTap = [
+            1.0,   // Level 1
+            1.1,   // Level 2
+            1.2,   // Level 3
+            1.3,   // Level 4
+            1.4,   // Level 5
+            1.5,   // Level 6
+            1.6,   // Level 7
+            1.7,   // Level 8
+            1.8,   // Level 9
+            2.0    // Level 10
+        ];
+
+        const dailyTapLimits = [
+            1000,  // Level 1
+            1200,  // Level 2
+            1400,  // Level 3
+            1600,  // Level 4
+            1800,  // Level 5
+            2000,  // Level 6
+            2200,  // Level 7
+            2400,  // Level 8
+            2600,  // Level 9
+            3000   // Level 10
+        ];
 
         let conversionRate = 0.000036;
         let tasks = [];
@@ -985,6 +1180,10 @@
         let userWithdrawals = [];
         let currentAdTaskId = null;
         let countdownInterval = null;
+        let adCountdownInterval = null;
+        let lastAdShownTime = 0;
+        const AD_INTERVAL = 120000; // 2 minutes in milliseconds
+        let tasksResetInterval = null;
 
         // DOM Elements
         const appElement = document.getElementById('app');
@@ -1003,12 +1202,14 @@
         const navItems = document.querySelectorAll('.nav-item');
         const coinsDisplay = document.getElementById('coins-display');
         const levelDisplay = document.getElementById('level-display');
+        const tapsPerSecond = document.getElementById('taps-per-second');
         const tasksList = document.getElementById('tasks-list');
         const profilePic = document.getElementById('profile-pic');
         const profileName = document.getElementById('profile-name');
         const profileId = document.getElementById('profile-id');
         const profileCoins = document.getElementById('profile-coins');
         const profileLevel = document.getElementById('profile-level');
+        const profileTaps = document.getElementById('profile-taps');
         const referralLink = document.getElementById('referral-link');
         const copyReferralBtn = document.getElementById('copy-referral');
         const exchangeRateDisplay = document.getElementById('exchange-rate');
@@ -1017,6 +1218,17 @@
         const withdrawalForm = document.getElementById('withdrawal-form');
         const withdrawalHistory = document.getElementById('withdrawal-history');
         const offlineIndicator = document.getElementById('offline-indicator');
+        
+        // New DOM Elements for Level System
+        const currentLevel = document.getElementById('current-level');
+        const currentTaps = document.getElementById('current-taps');
+        const requiredTaps = document.getElementById('required-taps');
+        const levelProgress = document.getElementById('level-progress');
+        const coinBonus = document.getElementById('coin-bonus');
+        
+        // New DOM Elements for Task Timer
+        const tasksResetTimer = document.getElementById('tasks-reset-timer');
+        const tasksTimer = document.getElementById('tasks-timer');
         
         // Admin elements
         const totalUsers = document.getElementById('total-users');
@@ -1049,21 +1261,46 @@
             initializeEventListeners();
             animateCoin();
             initializeInterstitialAds();
+            
+            // Prevent zooming
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            });
+            
+            document.addEventListener('gesturechange', function(e) {
+                e.preventDefault();
+            });
+            
+            document.addEventListener('gestureend', function(e) {
+                e.preventDefault();
+            });
         });
 
-        // Initialize interstitial ads using Monotag
+        // Initialize interstitial ads using Monotag - FIXED VERSION
         function initializeInterstitialAds() {
             if (typeof show_9943956 === 'function') {
                 show_9943956({ 
                     type: 'inApp', 
                     inAppSettings: { 
-                        frequency: 2, 
-                        capping: 0.1, 
-                        interval: 30, 
+                        frequency: 1, // Reduced frequency
+                        capping: 0.05, // Reduced capping
+                        interval: 120, // Changed from 30 to 120 seconds (2 minutes)
                         timeout: 5, 
                         everyPage: false 
                     } 
                 });
+            }
+        }
+
+        // Check if we should show an interstitial ad
+        function checkInterstitialAd() {
+            const now = Date.now();
+            if (now - lastAdShownTime > AD_INTERVAL) {
+                // Show interstitial ad
+                if (typeof show_9943956 === 'function') {
+                    show_9943956({ type: 'inApp' });
+                    lastAdShownTime = now;
+                }
             }
         }
 
@@ -1108,6 +1345,9 @@
             }
             
             checkReferral();
+            
+            // Set up periodic ad check every 30 seconds
+            setInterval(checkInterstitialAd, 30000);
         }
 
         // Check if user was referred
@@ -1143,30 +1383,31 @@
                         if (doc.exists) {
                             const data = doc.data();
                             
-                            // Merge data carefully - preserve current session data
-                            const currentCoins = userData.coins;
-                            const currentTaps = userData.tapsToday;
-                            const currentCompletedTasks = [...userData.completedTasks];
+                            // Use timestamp to determine which data is newer
+                            const cachedTimestamp = userData.lastUpdated || 0;
+                            const firebaseTimestamp = data.lastUpdated ? 
+                                (data.lastUpdated.seconds ? data.lastUpdated.seconds * 1000 : data.lastUpdated) : 0;
                             
-                            userData = { ...userData, ...data };
-                            
-                            // Restore current session data to prevent data loss
-                            userData.coins = Math.max(userData.coins, currentCoins);
-                            userData.tapsToday = Math.max(userData.tapsToday, currentTaps);
-                            
-                            // Merge completed tasks without duplicates
-                            userData.completedTasks = [...new Set([...userData.completedTasks, ...currentCompletedTasks])];
+                            // If Firebase data is newer, use it
+                            if (firebaseTimestamp > cachedTimestamp) {
+                                userData = { ...userData, ...data };
+                                console.log('Using newer Firebase data');
+                            } else {
+                                // Our cached data is newer, update Firebase
+                                updateUserData();
+                                console.log('Using cached data, updating Firebase');
+                            }
                             
                             checkDailyReset();
+                            checkTasksReset();
                             updateUI();
                             
                             if (userData.limitReachedTime) {
                                 startCountdown();
                             }
                             
-                            // Force save to ensure data consistency
+                            // Save to cache to ensure consistency
                             saveToCache();
-                            updateUserData();
                         } else {
                             createUserDocument();
                         }
@@ -1198,9 +1439,12 @@
             userData.totalCoins = 100;
             userData.level = 1;
             userData.tapsToday = 0;
+            userData.totalTaps = 0;
             userData.lastTapDate = new Date();
             userData.limitReachedTime = null;
             userData.completedTasks = [];
+            userData.lastUpdated = Date.now();
+            userData.tasksCompletedAt = null;
             
             db.collection('users').doc(userData.telegramId).set(userData)
                 .then(() => {
@@ -1233,7 +1477,8 @@
                     const newTotalCoins = (doc.data().totalCoins || 0) + 500;
                     transaction.update(referrerRef, {
                         coins: newCoins,
-                        totalCoins: newTotalCoins
+                        totalCoins: newTotalCoins,
+                        lastUpdated: Date.now()
                     });
                 });
             }).catch(error => {
@@ -1251,18 +1496,7 @@
                         
                         // Only update if we have valid cached data
                         if (data && data.telegramId === userData.telegramId) {
-                            // Preserve current session progress
-                            const currentCoins = userData.coins;
-                            const currentTaps = userData.tapsToday;
-                            const currentCompletedTasks = [...userData.completedTasks];
-                            
                             userData = { ...userData, ...data };
-                            
-                            // Don't override current session progress with older cached data
-                            userData.coins = Math.max(userData.coins, currentCoins);
-                            userData.tapsToday = Math.max(userData.tapsToday, currentTaps);
-                            userData.completedTasks = [...new Set([...userData.completedTasks, ...currentCompletedTasks])];
-                            
                             updateUI();
                         }
                     }
@@ -1282,6 +1516,7 @@
         function saveToCache() {
             try {
                 if (userData.telegramId) {
+                    userData.lastUpdated = Date.now();
                     localStorage.setItem(`tap_earn_user_${userData.telegramId}`, JSON.stringify(userData));
                     localStorage.setItem(`tap_earn_withdrawals_${userData.telegramId}`, JSON.stringify(userWithdrawals));
                 }
@@ -1329,6 +1564,61 @@
             }
         }
 
+        // Check if tasks need to be reset (24 hours after completion)
+        function checkTasksReset() {
+            if (userData.tasksCompletedAt) {
+                const completedTime = userData.tasksCompletedAt.seconds ? 
+                    new Date(userData.tasksCompletedAt.seconds * 1000) : 
+                    new Date(userData.tasksCompletedAt);
+                
+                const now = new Date();
+                const hoursPassed = (now - completedTime) / (1000 * 60 * 60);
+                
+                if (hoursPassed >= 24) {
+                    // Reset completed tasks
+                    userData.completedTasks = [];
+                    userData.tasksCompletedAt = null;
+                    updateUserData();
+                    loadTasks();
+                } else {
+                    // Start timer for tasks reset
+                    startTasksResetTimer(completedTime);
+                }
+            }
+        }
+
+        // Start tasks reset timer
+        function startTasksResetTimer(completedTime) {
+            if (tasksResetInterval) {
+                clearInterval(tasksResetInterval);
+            }
+            
+            tasksResetTimer.classList.remove('hidden');
+            
+            tasksResetInterval = setInterval(() => {
+                const now = new Date();
+                const timeDiff = completedTime.getTime() + (24 * 60 * 60 * 1000) - now.getTime();
+                
+                if (timeDiff <= 0) {
+                    // Reset completed tasks
+                    userData.completedTasks = [];
+                    userData.tasksCompletedAt = null;
+                    updateUserData();
+                    loadTasks();
+                    tasksResetTimer.classList.add('hidden');
+                    clearInterval(tasksResetInterval);
+                    tasksResetInterval = null;
+                    return;
+                }
+                
+                const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                
+                tasksTimer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
         // Update user data in Firebase - FIXED VERSION
         function updateUserData() {
             if (!userData.telegramId) return;
@@ -1345,6 +1635,7 @@
             }
             
             // Use set with merge instead of update to ensure all fields are preserved
+            userData.lastUpdated = Date.now();
             db.collection('users').doc(userData.telegramId).set(userData, { merge: true })
                 .then(() => {
                     console.log('User data updated in Firebase');
@@ -1397,14 +1688,83 @@
 
         // Update the UI with current user data
         function updateUI() {
-            coinsDisplay.textContent = userData.coins.toLocaleString();
+            // Update level first
+            updateLevel();
+            
+            // Format coins with commas and animation
+            const coinsValue = userData.coins.toLocaleString();
+            if (coinsDisplay.textContent !== coinsValue) {
+                coinsDisplay.classList.add('increase');
+                setTimeout(() => {
+                    coinsDisplay.classList.remove('increase');
+                }, 500);
+            }
+            coinsDisplay.textContent = coinsValue;
+            
             levelDisplay.textContent = userData.level;
             
-            const tapsLeft = Math.max(0, 1000 - userData.tapsToday);
-            tapInfo.textContent = `Tap the coin to earn! (${userData.tapsToday}/1000 today)`;
+            // Update taps per second based on level
+            const currentLevelIndex = Math.min(userData.level - 1, coinsPerTap.length - 1);
+            tapsPerSecond.textContent = coinsPerTap[currentLevelIndex].toFixed(1);
+            
+            const dailyLimit = dailyTapLimits[Math.min(userData.level - 1, dailyTapLimits.length - 1)] || 1000;
+            const tapsLeft = Math.max(0, dailyLimit - userData.tapsToday);
+            tapInfo.textContent = `Tap the coin to earn! (${userData.tapsToday}/${dailyLimit} today)`;
             
             updateProfileDisplay();
             updateUsdtEquivalent();
+            updateLevelProgress();
+        }
+
+        // Update level based on total taps
+        function updateLevel() {
+            const totalTaps = userData.totalTaps || 0;
+            let newLevel = 1;
+            
+            // Find the highest level the user has achieved
+            for (let i = 1; i < levelRequirements.length; i++) {
+                if (totalTaps >= levelRequirements[i]) {
+                    newLevel = i + 1;
+                } else {
+                    break;
+                }
+            }
+            
+            // Check if level increased
+            if (newLevel > userData.level) {
+                const oldLevel = userData.level;
+                userData.level = newLevel;
+                
+                // Show level up message
+                alert(`🎉 Level Up! You reached level ${newLevel}! You now earn ${coinsPerTap[newLevel-1]} coins per tap!`);
+            }
+        }
+
+        // Update level progress bar
+        function updateLevelProgress() {
+            const totalTaps = userData.totalTaps || 0;
+            const currentLevelIndex = Math.min(userData.level - 1, levelRequirements.length - 1);
+            const nextLevelIndex = Math.min(userData.level, levelRequirements.length - 1);
+            
+            const currentLevelTaps = levelRequirements[currentLevelIndex];
+            const nextLevelTaps = levelRequirements[nextLevelIndex];
+            
+            const tapsForNextLevel = nextLevelTaps - currentLevelTaps;
+            const userProgress = totalTaps - currentLevelTaps;
+            
+            const progressPercentage = Math.min(100, (userProgress / tapsForNextLevel) * 100);
+            
+            currentLevel.textContent = userData.level;
+            currentTaps.textContent = totalTaps.toLocaleString();
+            requiredTaps.textContent = nextLevelTaps.toLocaleString();
+            levelProgress.style.width = `${progressPercentage}%`;
+            
+            // Update coin bonus text
+            if (userData.level < coinsPerTap.length) {
+                coinBonus.textContent = `Next Level: ${coinsPerTap[userData.level].toFixed(1)} coins/tap`;
+            } else {
+                coinBonus.textContent = `Max Level: ${coinsPerTap[coinsPerTap.length-1].toFixed(1)} coins/tap`;
+            }
         }
 
         // Update profile display
@@ -1412,13 +1772,15 @@
             if (userData.profilePic) {
                 profilePic.innerHTML = `<img src="${userData.profilePic}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%;">`;
             } else {
-                profilePic.textContent = '👤';
+                // Use the default profile image
+                profilePic.innerHTML = `<img src="https://i.ibb.co/0RFyTvZH/image.jpg" alt="Profile">`;
             }
             
             profileName.textContent = userData.username || 'User';
             profileId.textContent = `ID: ${userData.telegramId}`;
             profileCoins.textContent = userData.coins.toLocaleString();
             profileLevel.textContent = userData.level;
+            profileTaps.textContent = (userData.totalTaps || 0).toLocaleString();
             
             if (userData.telegramId) {
                 referralLink.value = `https://t.me/TapEarn82_bot?start=ref_${userData.telegramId}`;
@@ -1494,6 +1856,10 @@
                 if (adContainer.style.display === 'flex') {
                     if (confirm('If you close the ad now, you will not receive coins. Are you sure?')) {
                         adContainer.style.display = 'none';
+                        if (adCountdownInterval) {
+                            clearInterval(adCountdownInterval);
+                            adCountdownInterval = null;
+                        }
                     }
                 }
             });
@@ -1505,7 +1871,9 @@
 
         // Handle coin tap
         function handleTap() {
-            if (userData.tapsToday >= 1000) {
+            const dailyLimit = dailyTapLimits[Math.min(userData.level - 1, dailyTapLimits.length - 1)] || 1000;
+            
+            if (userData.tapsToday >= dailyLimit) {
                 if (!userData.limitReachedTime) {
                     userData.limitReachedTime = new Date();
                     startCountdown();
@@ -1513,29 +1881,30 @@
                 return;
             }
             
-            userData.coins += 1;
-            userData.totalCoins += 1;
+            // Calculate coins earned based on level
+            const currentLevelIndex = Math.min(userData.level - 1, coinsPerTap.length - 1);
+            const coinsEarned = coinsPerTap[currentLevelIndex];
+            
+            userData.coins += coinsEarned;
+            userData.totalCoins += coinsEarned;
             userData.tapsToday += 1;
+            userData.totalTaps = (userData.totalTaps || 0) + 1;
             userData.lastTapDate = new Date();
             
-            if (userData.tapsToday >= 1000) {
+            if (userData.tapsToday >= dailyLimit) {
                 userData.limitReachedTime = new Date();
                 startCountdown();
-                alert('Daily limit reached! You can tap again in 24 hours.');
+                alert(`Daily limit reached! You can tap again in 24 hours.`);
             }
             
-            const newLevel = Math.floor(userData.totalCoins / 10000) + 1;
-            if (newLevel > userData.level) {
-                userData.level = newLevel;
-                userData.coins += 1000;
-                userData.totalCoins += 1000;
-                alert(`Level Up! You reached level ${newLevel} and received 1000 bonus coins!`);
-            }
+            // Check for level up
+            const oldLevel = userData.level;
+            updateLevel();
             
             updateUI();
             saveToCache();
             updateUserData();
-            createTapFeedback();
+            createTapFeedback(coinsEarned);
         }
 
         // Start 24-hour countdown timer
@@ -1586,10 +1955,10 @@
         }
 
         // Create tap feedback animation
-        function createTapFeedback() {
+        function createTapFeedback(coinsEarned) {
             const feedback = document.createElement('div');
             feedback.className = 'tap-feedback';
-            feedback.textContent = '+1';
+            feedback.textContent = `+${coinsEarned.toFixed(1)}`;
             
             const coinRect = tapCoin.getBoundingClientRect();
             const coinCenterX = coinRect.left + coinRect.width / 2;
@@ -1668,6 +2037,21 @@
                     tasks = tasks.filter(task => !userData.completedTasks.includes(task.id));
                     
                     renderTasks();
+                    
+                    // Check if all tasks are completed
+                    if (tasks.length === 0 && userData.completedTasks.length > 0) {
+                        if (!userData.tasksCompletedAt) {
+                            userData.tasksCompletedAt = new Date();
+                            updateUserData();
+                        }
+                        startTasksResetTimer(userData.tasksCompletedAt);
+                    } else {
+                        tasksResetTimer.classList.add('hidden');
+                        if (tasksResetInterval) {
+                            clearInterval(tasksResetInterval);
+                            tasksResetInterval = null;
+                        }
+                    }
                     
                     // Set up real-time listener for tasks
                     db.collection('tasks').where('isActive', '==', true)
@@ -1814,7 +2198,7 @@
             }
         }
 
-        // Watch ad (with timer) - kept for backward compatibility
+        // Watch ad (with 10-second timer) - FIXED VERSION
         function watchAd(taskId) {
             currentAdTaskId = taskId;
             const task = tasks.find(t => t.id === taskId);
@@ -1822,15 +2206,20 @@
             
             adContainer.style.display = 'flex';
             
-            let seconds = 5;
+            let seconds = 10;
             adTimer.textContent = seconds;
             
-            const countdown = setInterval(() => {
+            if (adCountdownInterval) {
+                clearInterval(adCountdownInterval);
+            }
+            
+            adCountdownInterval = setInterval(() => {
                 seconds--;
                 adTimer.textContent = seconds;
                 
                 if (seconds <= 0) {
-                    clearInterval(countdown);
+                    clearInterval(adCountdownInterval);
+                    adCountdownInterval = null;
                     completeTask(taskId);
                     adContainer.style.display = 'none';
                 }
@@ -1859,6 +2248,13 @@
             renderTasks();
             
             alert(`Task completed! You earned ${task.reward} coins.`);
+            
+            // Check if all tasks are completed
+            if (tasks.length === 0) {
+                userData.tasksCompletedAt = new Date();
+                updateUserData();
+                startTasksResetTimer(userData.tasksCompletedAt);
+            }
         }
 
         // Submit withdrawal request
