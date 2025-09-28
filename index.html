@@ -691,8 +691,8 @@
         <button class="ad-close" id="ad-close">✕</button>
         <div class="ad-content">
             <h2>Watch Ad to Earn Coins</h2>
-            <p id="ad-message">Please watch this ad for 10 seconds to earn your reward</p>
-            <div class="ad-timer" id="ad-timer">10</div>
+            <p>Please watch this ad for 5 seconds to earn your reward</p>
+            <div class="ad-timer" id="ad-timer">5</div>
             <p>Do not close this window until the timer completes</p>
         </div>
     </div>
@@ -950,7 +950,7 @@
     
     <script>
         // Firebase Configuration
-      const firebaseConfig = {
+        const firebaseConfig = {
   apiKey: "AIzaSyAPoCeD2tC-LVkXGLpm6Whp1HdF3kA18Bg",
   authDomain: "mybota-a1c57.firebaseapp.com",
   projectId: "mybota-a1c57",
@@ -958,7 +958,6 @@
   messagingSenderId: "1097209841071",
   appId: "1:1097209841071:web:15832f1359084f8ae99b5a"
 };
-
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -976,8 +975,7 @@
             lastTapDate: null,
             limitReachedTime: null,
             referredBy: null,
-            completedTasks: [],
-            lastUpdated: null
+            completedTasks: []
         };
 
         let conversionRate = 0.000036;
@@ -987,7 +985,6 @@
         let userWithdrawals = [];
         let currentAdTaskId = null;
         let countdownInterval = null;
-        let adCountdownInterval = null;
 
         // DOM Elements
         const appElement = document.getElementById('app');
@@ -1146,20 +1143,19 @@
                         if (doc.exists) {
                             const data = doc.data();
                             
-                            // Use timestamp to determine which data is newer
-                            const cachedTimestamp = userData.lastUpdated || 0;
-                            const firebaseTimestamp = data.lastUpdated ? 
-                                (data.lastUpdated.seconds ? data.lastUpdated.seconds * 1000 : data.lastUpdated) : 0;
+                            // Merge data carefully - preserve current session data
+                            const currentCoins = userData.coins;
+                            const currentTaps = userData.tapsToday;
+                            const currentCompletedTasks = [...userData.completedTasks];
                             
-                            // If Firebase data is newer, use it
-                            if (firebaseTimestamp > cachedTimestamp) {
-                                userData = { ...userData, ...data };
-                                console.log('Using newer Firebase data');
-                            } else {
-                                // Our cached data is newer, update Firebase
-                                updateUserData();
-                                console.log('Using cached data, updating Firebase');
-                            }
+                            userData = { ...userData, ...data };
+                            
+                            // Restore current session data to prevent data loss
+                            userData.coins = Math.max(userData.coins, currentCoins);
+                            userData.tapsToday = Math.max(userData.tapsToday, currentTaps);
+                            
+                            // Merge completed tasks without duplicates
+                            userData.completedTasks = [...new Set([...userData.completedTasks, ...currentCompletedTasks])];
                             
                             checkDailyReset();
                             updateUI();
@@ -1168,8 +1164,9 @@
                                 startCountdown();
                             }
                             
-                            // Save to cache to ensure consistency
+                            // Force save to ensure data consistency
                             saveToCache();
+                            updateUserData();
                         } else {
                             createUserDocument();
                         }
@@ -1204,7 +1201,6 @@
             userData.lastTapDate = new Date();
             userData.limitReachedTime = null;
             userData.completedTasks = [];
-            userData.lastUpdated = Date.now();
             
             db.collection('users').doc(userData.telegramId).set(userData)
                 .then(() => {
@@ -1237,8 +1233,7 @@
                     const newTotalCoins = (doc.data().totalCoins || 0) + 500;
                     transaction.update(referrerRef, {
                         coins: newCoins,
-                        totalCoins: newTotalCoins,
-                        lastUpdated: Date.now()
+                        totalCoins: newTotalCoins
                     });
                 });
             }).catch(error => {
@@ -1256,7 +1251,18 @@
                         
                         // Only update if we have valid cached data
                         if (data && data.telegramId === userData.telegramId) {
+                            // Preserve current session progress
+                            const currentCoins = userData.coins;
+                            const currentTaps = userData.tapsToday;
+                            const currentCompletedTasks = [...userData.completedTasks];
+                            
                             userData = { ...userData, ...data };
+                            
+                            // Don't override current session progress with older cached data
+                            userData.coins = Math.max(userData.coins, currentCoins);
+                            userData.tapsToday = Math.max(userData.tapsToday, currentTaps);
+                            userData.completedTasks = [...new Set([...userData.completedTasks, ...currentCompletedTasks])];
+                            
                             updateUI();
                         }
                     }
@@ -1276,7 +1282,6 @@
         function saveToCache() {
             try {
                 if (userData.telegramId) {
-                    userData.lastUpdated = Date.now();
                     localStorage.setItem(`tap_earn_user_${userData.telegramId}`, JSON.stringify(userData));
                     localStorage.setItem(`tap_earn_withdrawals_${userData.telegramId}`, JSON.stringify(userWithdrawals));
                 }
@@ -1340,7 +1345,6 @@
             }
             
             // Use set with merge instead of update to ensure all fields are preserved
-            userData.lastUpdated = Date.now();
             db.collection('users').doc(userData.telegramId).set(userData, { merge: true })
                 .then(() => {
                     console.log('User data updated in Firebase');
@@ -1490,10 +1494,6 @@
                 if (adContainer.style.display === 'flex') {
                     if (confirm('If you close the ad now, you will not receive coins. Are you sure?')) {
                         adContainer.style.display = 'none';
-                        if (adCountdownInterval) {
-                            clearInterval(adCountdownInterval);
-                            adCountdownInterval = null;
-                        }
                     }
                 }
             });
@@ -1814,7 +1814,7 @@
             }
         }
 
-        // Watch ad (with 10-second timer) - FIXED VERSION
+        // Watch ad (with timer) - kept for backward compatibility
         function watchAd(taskId) {
             currentAdTaskId = taskId;
             const task = tasks.find(t => t.id === taskId);
@@ -1822,20 +1822,15 @@
             
             adContainer.style.display = 'flex';
             
-            let seconds = 10;
+            let seconds = 5;
             adTimer.textContent = seconds;
             
-            if (adCountdownInterval) {
-                clearInterval(adCountdownInterval);
-            }
-            
-            adCountdownInterval = setInterval(() => {
+            const countdown = setInterval(() => {
                 seconds--;
                 adTimer.textContent = seconds;
                 
                 if (seconds <= 0) {
-                    clearInterval(adCountdownInterval);
-                    adCountdownInterval = null;
+                    clearInterval(countdown);
                     completeTask(taskId);
                     adContainer.style.display = 'none';
                 }
