@@ -649,6 +649,20 @@
         .interstitial-badge {
             background: linear-gradient(45deg, #4ECDC4, #00CED1);
         }
+
+        .ad-task-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+        }
+
+        .ad-task-form .full-width {
+            grid-column: 1 / -1;
+        }
     </style>
     
     <!-- Firebase SDK -->
@@ -875,7 +889,21 @@
             </div>
             
             <div class="admin-section">
-                <h2>Task Management</h2>
+                <h2>Quick Ad Tasks</h2>
+                
+                <div class="ad-task-form">
+                    <h3 class="full-width">Create Pop Ad Task</h3>
+                    <input type="number" id="pop-ad-reward" placeholder="Reward Coins" value="10" min="1" required>
+                    <button class="btn full-width" id="create-pop-ad">Create Pop Ad Task</button>
+                </div>
+                
+                <div class="ad-task-form">
+                    <h3 class="full-width">Create Interstitial Ad Task</h3>
+                    <input type="number" id="interstitial-ad-reward" placeholder="Reward Coins" value="20" min="1" required>
+                    <button class="btn full-width" id="create-interstitial-ad">Create Interstitial Ad Task</button>
+                </div>
+                
+                <h3>Task Management</h3>
                 <form id="task-form" class="admin-form">
                     <input type="text" id="task-title" placeholder="Task Title" required>
                     <input type="number" id="task-reward" placeholder="Reward Coins" required>
@@ -883,12 +911,10 @@
                         <option value="url">URL/Visit</option>
                         <option value="channel">Telegram Channel</option>
                         <option value="ad">Watch Ad</option>
-                        <option value="pop_ad">Pop Ad</option>
-                        <option value="interstitial_ad">Interstitial Ad</option>
                     </select>
                     <input type="text" id="task-target" placeholder="URL or Channel ID" required>
                     <textarea id="task-description" placeholder="Task Description" class="full-width" required></textarea>
-                    <button type="submit" class="btn full-width">Add Task</button>
+                    <button type="submit" class="btn full-width">Add Custom Task</button>
                 </form>
                 
                 <table class="admin-table">
@@ -962,35 +988,6 @@
         let userWithdrawals = [];
         let currentAdTaskId = null;
         let countdownInterval = null;
-        let adShownCount = 0;
-        let lastAdShownTime = 0;
-
-        // Default ad tasks
-        const defaultAdTasks = [
-            // Pop Ads - 10 coins each
-            { id: 'pop_ad_1', title: 'Watch Pop Ad 1', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            { id: 'pop_ad_2', title: 'Watch Pop Ad 2', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            { id: 'pop_ad_3', title: 'Watch Pop Ad 3', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            { id: 'pop_ad_4', title: 'Watch Pop Ad 4', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            { id: 'pop_ad_5', title: 'Watch Pop Ad 5', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            { id: 'pop_ad_6', title: 'Watch Pop Ad 6', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            { id: 'pop_ad_7', title: 'Watch Pop Ad 7', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            { id: 'pop_ad_8', title: 'Watch Pop Ad 8', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            { id: 'pop_ad_9', title: 'Watch Pop Ad 9', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            { id: 'pop_ad_10', title: 'Watch Pop Ad 10', description: 'Watch a short pop ad to earn coins', reward: 10, type: 'pop_ad', target: 'pop', isActive: true },
-            
-            // Interstitial Ads - 20 coins each
-            { id: 'interstitial_ad_1', title: 'Watch Interstitial Ad 1', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
-            { id: 'interstitial_ad_2', title: 'Watch Interstitial Ad 2', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
-            { id: 'interstitial_ad_3', title: 'Watch Interstitial Ad 3', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
-            { id: 'interstitial_ad_4', title: 'Watch Interstitial Ad 4', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
-            { id: 'interstitial_ad_5', title: 'Watch Interstitial Ad 5', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
-            { id: 'interstitial_ad_6', title: 'Watch Interstitial Ad 6', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
-            { id: 'interstitial_ad_7', title: 'Watch Interstitial Ad 7', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
-            { id: 'interstitial_ad_8', title: 'Watch Interstitial Ad 8', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
-            { id: 'interstitial_ad_9', title: 'Watch Interstitial Ad 9', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true },
-            { id: 'interstitial_ad_10', title: 'Watch Interstitial Ad 10', description: 'Watch a full-screen interstitial ad', reward: 20, type: 'interstitial_ad', target: 'interstitial', isActive: true }
-        ];
 
         // DOM Elements
         const appElement = document.getElementById('app');
@@ -1032,6 +1029,10 @@
         const adminTasks = document.getElementById('admin-tasks');
         const exchangeRateInput = document.getElementById('exchange-rate-input');
         const updateRateBtn = document.getElementById('update-rate');
+        const createPopAdBtn = document.getElementById('create-pop-ad');
+        const createInterstitialAdBtn = document.getElementById('create-interstitial-ad');
+        const popAdReward = document.getElementById('pop-ad-reward');
+        const interstitialAdReward = document.getElementById('interstitial-ad-reward');
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -1164,7 +1165,7 @@
             }
             
             loadConversionRate();
-            loadTasks();
+            loadTasks(); // Load tasks after user data is loaded
             loadWithdrawalHistory();
         }
 
@@ -1405,7 +1406,7 @@
                     }
                     
                     if (sectionId === 'tasks-section') {
-                        loadTasks();
+                        loadTasks(); // Reload tasks when section is activated
                     }
                 });
             });
@@ -1603,52 +1604,55 @@
             }
         }
 
-        // Load tasks from Firebase
+        // Load tasks from Firebase - FIXED VERSION
         function loadTasks() {
+            console.log('Loading tasks from Firebase...');
+            
             db.collection('tasks').where('isActive', '==', true).get()
                 .then(querySnapshot => {
                     tasks = [];
                     querySnapshot.forEach(doc => {
-                        tasks.push({ id: doc.id, ...doc.data() });
+                        const taskData = { id: doc.id, ...doc.data() };
+                        tasks.push(taskData);
                     });
                     
-                    // Add default ad tasks if no tasks exist
-                    if (tasks.length === 0) {
-                        tasks = [...defaultAdTasks];
-                    }
+                    console.log(`Loaded ${tasks.length} tasks from Firebase:`, tasks);
                     
                     // Filter out completed tasks
-                    tasks = tasks.filter(task => {
+                    const filteredTasks = tasks.filter(task => {
                         if (task.type === 'pop_ad') {
-                            return userData.completedPopAds < 10;
+                            return !userData.completedTasks.includes(task.id);
                         } else if (task.type === 'interstitial_ad') {
-                            return userData.completedInterstitialAds < 10;
+                            return !userData.completedTasks.includes(task.id);
                         } else {
                             return !userData.completedTasks.includes(task.id);
                         }
                     });
+                    
+                    tasks = filteredTasks;
+                    console.log(`After filtering: ${tasks.length} tasks available`);
                     
                     renderTasks();
                 })
                 .catch(error => {
-                    console.error('Error loading tasks:', error);
-                    // Use default tasks if online fails
-                    tasks = [...defaultAdTasks];
-                    tasks = tasks.filter(task => {
-                        if (task.type === 'pop_ad') {
-                            return userData.completedPopAds < 10;
-                        } else if (task.type === 'interstitial_ad') {
-                            return userData.completedInterstitialAds < 10;
-                        } else {
-                            return !userData.completedTasks.includes(task.id);
-                        }
-                    });
-                    renderTasks();
+                    console.error('Error loading tasks from Firebase:', error);
+                    
+                    // Try to load from cache if online fails
+                    const cachedTasks = localStorage.getItem('tap_earn_tasks');
+                    if (cachedTasks) {
+                        tasks = JSON.parse(cachedTasks);
+                        const filteredTasks = tasks.filter(task => !userData.completedTasks.includes(task.id));
+                        tasks = filteredTasks;
+                        renderTasks();
+                    } else {
+                        tasksList.innerHTML = '<div class="card text-center">No tasks available at the moment. Check back later!</div>';
+                    }
                 });
         }
 
         // Render tasks in the UI
         function renderTasks() {
+            console.log('Rendering tasks:', tasks);
             tasksList.innerHTML = '';
             
             if (tasks.length === 0) {
@@ -1699,6 +1703,7 @@
                 tasksList.appendChild(taskElement);
             });
             
+            // Cache tasks for offline use
             localStorage.setItem('tap_earn_tasks', JSON.stringify(tasks));
         }
 
@@ -1786,31 +1791,16 @@
             const task = tasks.find(t => t.id === taskId);
             if (!task) return;
             
-            // Check if already completed for ad tasks
-            if (task.type === 'pop_ad' && userData.completedPopAds >= 10) {
-                return;
-            }
-            
-            if (task.type === 'interstitial_ad' && userData.completedInterstitialAds >= 10) {
-                return;
-            }
-            
+            // Check if already completed
             if (userData.completedTasks.includes(taskId)) {
+                alert('You have already completed this task!');
                 return;
             }
             
             // Reward user
             userData.coins += task.reward;
             userData.totalCoins += task.reward;
-            
-            // Track completion
-            if (task.type === 'pop_ad') {
-                userData.completedPopAds = (userData.completedPopAds || 0) + 1;
-            } else if (task.type === 'interstitial_ad') {
-                userData.completedInterstitialAds = (userData.completedInterstitialAds || 0) + 1;
-            } else {
-                userData.completedTasks.push(taskId);
-            }
+            userData.completedTasks.push(taskId);
             
             // Update UI
             updateUI();
@@ -1819,11 +1809,8 @@
             saveToCache();
             updateUserData();
             
-            // Remove task from view if it's not an ad task
-            if (task.type !== 'pop_ad' && task.type !== 'interstitial_ad') {
-                tasks = tasks.filter(t => t.id !== taskId);
-            }
-            
+            // Remove task from view
+            tasks = tasks.filter(t => t.id !== taskId);
             renderTasks();
             
             alert(`Task completed! You earned ${task.reward} coins.`);
@@ -1983,14 +1970,51 @@
         }
 
         function initializeAdminEvents() {
+            // Task form submission
             taskForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 addTask();
             });
             
+            // Update exchange rate
             updateRateBtn.addEventListener('click', function() {
                 updateExchangeRate();
             });
+            
+            // Quick ad task creation
+            createPopAdBtn.addEventListener('click', function() {
+                createQuickAdTask('pop_ad', parseInt(popAdReward.value));
+            });
+            
+            createInterstitialAdBtn.addEventListener('click', function() {
+                createQuickAdTask('interstitial_ad', parseInt(interstitialAdReward.value));
+            });
+        }
+
+        // Create quick ad task (simplified)
+        function createQuickAdTask(type, reward) {
+            if (!reward || reward < 1) {
+                alert('Please enter a valid reward amount!');
+                return;
+            }
+            
+            let taskData = {
+                title: type === 'pop_ad' ? 'Watch Pop Ad' : 'Watch Interstitial Ad',
+                description: type === 'pop_ad' ? 'Watch a short pop ad to earn coins' : 'Watch a full-screen interstitial ad',
+                reward: reward,
+                type: type,
+                target: type === 'pop_ad' ? 'pop' : 'interstitial',
+                isActive: true
+            };
+            
+            db.collection('tasks').add(taskData)
+                .then(() => {
+                    alert(`${type === 'pop_ad' ? 'Pop Ad' : 'Interstitial Ad'} task created successfully with ${reward} coins reward!`);
+                })
+                .catch(error => {
+                    console.error('Error creating ad task:', error);
+                    alert('Error creating ad task. Please try again.');
+                });
         }
 
         function loadAdminStatistics() {
