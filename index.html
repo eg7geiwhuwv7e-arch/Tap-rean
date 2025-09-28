@@ -50,6 +50,68 @@
             user-select: none;
         }
 
+        /* Loading Screen Styles */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-logo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            object-fit: cover;
+            border: 4px solid var(--accent);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .loading-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #00d4ff 0%, #7b61ff 50%, #ff6b6b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(0, 212, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        .loading-countdown {
+            margin-top: 20px;
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 30px rgba(0, 212, 255, 0.8); }
+            100% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 212, 255, 0.5); }
+        }
+
         .container {
             max-width: 100%;
             padding: 15px;
@@ -264,10 +326,18 @@
             backdrop-filter: blur(10px);
         }
 
+        /* Fix for tasks section scrolling */
+        #tasks-section {
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
         .tasks-list {
             display: flex;
             flex-direction: column;
             gap: 15px;
+            padding-bottom: 10px;
         }
 
         .task-card {
@@ -798,6 +868,14 @@
     <script src='//libtl.com/sdk.js' data-zone='9943956' data-sdk='show_9943956'></script>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <img src="https://i.ibb.co/VcNrVVH7/image.jpg" alt="Loading" class="loading-logo">
+        <div class="loading-text">TAP & EARN</div>
+        <div class="loading-spinner"></div>
+        <div class="loading-countdown" id="loading-countdown">5</div>
+    </div>
+
     <!-- Password Modal for Admin -->
     <div id="password-modal" class="modal">
         <div class="modal-content">
@@ -819,7 +897,7 @@
     </div>
 
     <!-- Main App Interface -->
-    <div id="app">
+    <div id="app" class="hidden">
         <!-- Tap Section -->
         <section id="tap-section" class="section active">
             <div class="container">
@@ -1184,9 +1262,12 @@
         let lastAdShownTime = 0;
         const AD_INTERVAL = 120000; // 2 minutes in milliseconds
         let tasksResetInterval = null;
+        let loadingScreenInterval = null;
 
         // DOM Elements
         const appElement = document.getElementById('app');
+        const loadingScreen = document.getElementById('loading-screen');
+        const loadingCountdown = document.getElementById('loading-countdown');
         const adminPanel = document.getElementById('admin-panel');
         const passwordModal = document.getElementById('password-modal');
         const adminPasswordInput = document.getElementById('admin-password');
@@ -1245,6 +1326,13 @@
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
+            // Show loading screen initially
+            loadingScreen.style.display = 'flex';
+            appElement.classList.add('hidden');
+            
+            // Start the 5-second loading countdown
+            startLoadingCountdown();
+            
             if (window.Telegram && Telegram.WebApp) {
                 appElement.style.display = 'block';
                 adminPanel.style.display = 'none';
@@ -1276,6 +1364,22 @@
             });
         });
 
+        // Start 5-second loading countdown
+        function startLoadingCountdown() {
+            let seconds = 3;
+            loadingCountdown.textContent = seconds;
+            
+            loadingScreenInterval = setInterval(() => {
+                seconds--;
+                loadingCountdown.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(loadingScreenInterval);
+                    hideLoadingScreen();
+                }
+            }, 1000);
+        }
+
         // Initialize interstitial ads using Monotag - FIXED VERSION
         function initializeInterstitialAds() {
             if (typeof show_9943956 === 'function') {
@@ -1304,6 +1408,20 @@
             }
         }
 
+        // Hide loading screen and show app
+        function hideLoadingScreen() {
+            // Clear the interval if it's still running
+            if (loadingScreenInterval) {
+                clearInterval(loadingScreenInterval);
+            }
+            
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                appElement.classList.remove('hidden');
+            }, 500);
+        }
+
         // Initialize admin access with password
         function initializeAdminAccess() {
             submitPasswordBtn.addEventListener('click', function() {
@@ -1312,6 +1430,7 @@
                     passwordModal.style.display = 'none';
                     adminPanel.style.display = 'block';
                     initializeAdminPanel();
+                    // The loading screen will auto-hide after 5 seconds
                 } else {
                     alert('Invalid password!');
                 }
