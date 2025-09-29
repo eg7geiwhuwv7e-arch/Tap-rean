@@ -17,6 +17,7 @@
             -webkit-touch-callout: none;
         }
 
+        /* FIX: Allow scrolling and zooming only for admin panel */
         html, body {
             touch-action: manipulation;
             overflow: hidden;
@@ -25,6 +26,33 @@
             position: fixed;
         }
 
+        /* FIX: Allow scrolling in admin panel */
+        body.admin-mode {
+            position: static !important;
+            overflow: auto !important;
+            height: auto !important;
+            min-height: 100vh;
+        }
+
+        /* FIX: Admin panel specific styles for scrolling */
+        #admin-panel {
+            display: none;
+            position: relative;
+            min-height: 100vh;
+            background: var(--bg-primary);
+            overflow-x: hidden;
+        }
+
+        body.admin-mode #admin-panel {
+            display: block;
+        }
+
+        body.admin-mode #app,
+        body.admin-mode .bottom-nav {
+            display: none !important;
+        }
+
+        /* Rest of your existing CSS remains the same */
         :root {
             --bg-primary: rgba(18, 18, 18, 0.85);
             --bg-secondary: rgba(30, 30, 30, 0.9);
@@ -506,6 +534,10 @@
             display: none;
             padding: 20px;
             padding-bottom: 30px;
+            /* FIX: Allow scrolling in admin panel */
+            overflow-y: auto;
+            height: auto;
+            min-height: 100vh;
         }
 
         .admin-section {
@@ -599,6 +631,15 @@
         @media (min-width: 768px) {
             .container {
                 max-width: 600px;
+            }
+            
+            /* FIX: Better admin panel layout on desktop */
+            .admin-panel .container {
+                max-width: 1200px;
+            }
+            
+            .admin-form {
+                grid-template-columns: 1fr 1fr 1fr;
             }
         }
 
@@ -1691,12 +1732,14 @@
             }, 500);
         }
 
-        // Initialize admin access with password
+        // Initialize admin access with password - FIXED VERSION
         function initializeAdminAccess() {
             submitPasswordBtn.addEventListener('click', function() {
                 const password = adminPasswordInput.value;
                 if (password === 'admin123') {
                     passwordModal.style.display = 'none';
+                    // FIX: Enable admin mode for scrolling and zooming
+                    document.body.classList.add('admin-mode');
                     adminPanel.style.display = 'block';
                     initializeAdminPanel();
                     // The loading screen will auto-hide after 5 seconds
