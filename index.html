@@ -191,7 +191,7 @@
             transition: background-color 0.2s;
             text-align: center;
             flex: 1;
-            max-width: 25%;
+            max-width: 20%;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -327,7 +327,7 @@
         }
 
         /* Fix for tasks section scrolling */
-        #tasks-section {
+        #tasks-section, #voucher-section {
             height: calc(100vh - 100px);
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -854,6 +854,116 @@
         .tasks-reset-timer.hidden {
             display: none;
         }
+
+        /* Voucher Shop Styles */
+        .voucher-categories {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .voucher-category {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .voucher-category h3 {
+            margin-bottom: 15px;
+            color: var(--accent);
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .voucher-items {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .voucher-item {
+            background-color: var(--bg-primary);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .voucher-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .voucher-info {
+            flex: 1;
+        }
+
+        .voucher-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .voucher-price {
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .voucher-button {
+            padding: 8px 16px;
+            background-color: var(--accent);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .voucher-button:hover {
+            background-color: var(--accent-secondary);
+        }
+
+        .voucher-button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        .voucher-history {
+            margin-top: 30px;
+        }
+
+        .admin-voucher-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+        }
+
+        .admin-voucher-form .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Admin Add Coins Styles */
+        .add-coins-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius);
+        }
+
+        .add-coins-form .full-width {
+            grid-column: 1 / -1;
+        }
     </style>
     
     <!-- Firebase SDK -->
@@ -893,6 +1003,26 @@
             <p id="ad-message">Please watch this ad for 10 seconds to earn your reward</p>
             <div class="ad-timer" id="ad-timer">10</div>
             <p>Do not close this window until the timer completes</p>
+        </div>
+    </div>
+
+    <!-- Voucher Redemption Modal -->
+    <div id="voucher-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="voucher-modal-title">Redeem Voucher</h2>
+            <p id="voucher-modal-description">Are you sure you want to redeem this voucher?</p>
+            <div class="stats" style="justify-content: center; margin: 15px 0;">
+                <div class="stat-item">
+                    <div class="coin-display" id="voucher-modal-cost">0</div>
+                    <div class="stat-label">Cost</div>
+                </div>
+                <div class="stat-item">
+                    <div class="coin-display" id="voucher-modal-balance">0</div>
+                    <div class="stat-label">Your Balance</div>
+                </div>
+            </div>
+            <button class="btn full-width" id="confirm-voucher">Redeem Now</button>
+            <button class="btn btn-secondary full-width mt-20" id="cancel-voucher">Cancel</button>
         </div>
     </div>
 
@@ -956,6 +1086,47 @@
                 
                 <div class="tasks-list" id="tasks-list">
                     <!-- Tasks will be populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Voucher Shop Section -->
+        <section id="voucher-section" class="section">
+            <div class="container">
+                <h1 class="mb-20">🎁 Voucher Shop</h1>
+                
+                <div class="card">
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="coin-display" id="voucher-coins-display">0</div>
+                            <div class="stat-label">Your Coins</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="voucher-redemptions">0</div>
+                            <div class="stat-label">Redemptions</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="voucher-categories" id="voucher-categories">
+                    <!-- Voucher categories will be populated by JavaScript -->
+                </div>
+                
+                <div class="voucher-history card">
+                    <h3>Redemption History</h3>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Voucher</th>
+                                <th>Cost</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="voucher-history">
+                            <!-- Voucher history will be populated by JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </section>
@@ -1067,6 +1238,10 @@
                 <img src="https://i.ibb.co/PvT9vz1p/image.jpg" alt="Tasks" class="nav-icon">
                 <div class="nav-label">Tasks</div>
             </div>
+            <div class="nav-item" data-section="voucher-section">
+                <img src="https://i.ibb.co/23q13Kzs/image.jpg" alt="Voucher" class="nav-icon">
+                <div class="nav-label">Vouchers</div>
+            </div>
             <div class="nav-item" data-section="profile-section">
                 <img src="https://i.ibb.co/0RFyTvZH/image.jpg" alt="Profile" class="nav-icon">
                 <div class="nav-label">Profile</div>
@@ -1094,6 +1269,43 @@
                         <div class="stat-value" id="total-coins">0</div>
                         <div class="stat-label">Total Coins</div>
                     </div>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h2>Add Coins to User</h2>
+                <div class="add-coins-form">
+                    <input type="text" id="add-coins-user-id" placeholder="User ID" required>
+                    <input type="number" id="add-coins-amount" placeholder="Coins Amount" min="1" required>
+                    <button class="btn full-width" id="add-coins-btn">Add Coins</button>
+                </div>
+            </div>
+            
+            <div class="admin-section">
+                <h2>Voucher Management</h2>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Voucher</th>
+                            <th>Cost</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-vouchers">
+                        <!-- Vouchers will be populated by JavaScript -->
+                    </tbody>
+                </table>
+                
+                <div class="admin-voucher-form">
+                    <h3 class="full-width">Approve Voucher</h3>
+                    <input type="text" id="voucher-user-id" placeholder="User ID" required>
+                    <input type="text" id="voucher-name" placeholder="Voucher Name" required>
+                    <input type="text" id="voucher-code" placeholder="Voucher Code" required>
+                    <button class="btn full-width" id="approve-voucher">Approve Voucher</button>
                 </div>
             </div>
             
@@ -1251,11 +1463,43 @@
             3000   // Level 10
         ];
 
+        // Voucher Configuration
+        const voucherCategories = [
+            {
+                name: "Roblox Gift Cards",
+                items: [
+                    { name: "Roblox Gift Card $1", price: 30000 },
+                    { name: "Roblox Gift Card $3", price: 90000 },
+                    { name: "Roblox Gift Card $5", price: 150000 },
+                    { name: "Roblox Gift Card $10", price: 300000 }
+                ]
+            },
+            {
+                name: "Google Play Gift Cards",
+                items: [
+                    { name: "Google Play Gift Card $1", price: 30000 },
+                    { name: "Google Play Gift Card $3", price: 90000 },
+                    { name: "Google Play Gift Card $5", price: 150000 },
+                    { name: "Google Play Gift Card $10", price: 300000 }
+                ]
+            },
+            {
+                name: "Amazon Gift Cards",
+                items: [
+                    { name: "Amazon Gift Card $1", price: 30000 },
+                    { name: "Amazon Gift Card $3", price: 90000 },
+                    { name: "Amazon Gift Card $5", price: 150000 },
+                    { name: "Amazon Gift Card $10", price: 300000 }
+                ]
+            }
+        ];
+
         let conversionRate = 0.000036;
         let tasks = [];
         let isOnline = true;
         let pendingActions = [];
         let userWithdrawals = [];
+        let userVouchers = [];
         let currentAdTaskId = null;
         let countdownInterval = null;
         let adCountdownInterval = null;
@@ -1263,6 +1507,7 @@
         const AD_INTERVAL = 120000; // 2 minutes in milliseconds
         let tasksResetInterval = null;
         let loadingScreenInterval = null;
+        let selectedVoucher = null;
 
         // DOM Elements
         const appElement = document.getElementById('app');
@@ -1278,6 +1523,13 @@
         const tapCoin = document.getElementById('tap-coin');
         const tapInfo = document.getElementById('tap-info');
         const countdownTimer = document.getElementById('countdown-timer');
+        const voucherModal = document.getElementById('voucher-modal');
+        const voucherModalTitle = document.getElementById('voucher-modal-title');
+        const voucherModalDescription = document.getElementById('voucher-modal-description');
+        const voucherModalCost = document.getElementById('voucher-modal-cost');
+        const voucherModalBalance = document.getElementById('voucher-modal-balance');
+        const confirmVoucherBtn = document.getElementById('confirm-voucher');
+        const cancelVoucherBtn = document.getElementById('cancel-voucher');
         
         const sections = document.querySelectorAll('.section');
         const navItems = document.querySelectorAll('.nav-item');
@@ -1300,6 +1552,12 @@
         const withdrawalHistory = document.getElementById('withdrawal-history');
         const offlineIndicator = document.getElementById('offline-indicator');
         
+        // Voucher Shop Elements
+        const voucherCoinsDisplay = document.getElementById('voucher-coins-display');
+        const voucherRedemptions = document.getElementById('voucher-redemptions');
+        const voucherCategoriesElement = document.getElementById('voucher-categories');
+        const voucherHistory = document.getElementById('voucher-history');
+        
         // New DOM Elements for Level System
         const currentLevel = document.getElementById('current-level');
         const currentTaps = document.getElementById('current-taps');
@@ -1315,6 +1573,7 @@
         const totalUsers = document.getElementById('total-users');
         const totalCoins = document.getElementById('total-coins');
         const adminWithdrawals = document.getElementById('admin-withdrawals');
+        const adminVouchers = document.getElementById('admin-vouchers');
         const taskForm = document.getElementById('task-form');
         const adminTasks = document.getElementById('admin-tasks');
         const exchangeRateInput = document.getElementById('exchange-rate-input');
@@ -1323,6 +1582,15 @@
         const createInterstitialAdBtn = document.getElementById('create-interstitial-ad');
         const popAdReward = document.getElementById('pop-ad-reward');
         const interstitialAdReward = document.getElementById('interstitial-ad-reward');
+        const voucherUserId = document.getElementById('voucher-user-id');
+        const voucherName = document.getElementById('voucher-name');
+        const voucherCode = document.getElementById('voucher-code');
+        const approveVoucherBtn = document.getElementById('approve-voucher');
+        
+        // Admin Add Coins Elements
+        const addCoinsUserId = document.getElementById('add-coins-user-id');
+        const addCoinsAmount = document.getElementById('add-coins-amount');
+        const addCoinsBtn = document.getElementById('add-coins-btn');
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -1349,6 +1617,7 @@
             initializeEventListeners();
             animateCoin();
             initializeInterstitialAds();
+            initializeVoucherShop();
             
             // Prevent zooming
             document.addEventListener('gesturestart', function(e) {
@@ -1521,8 +1790,19 @@
                             checkTasksReset();
                             updateUI();
                             
+                            // FIX: Check if we need to start the countdown timer when app loads
                             if (userData.limitReachedTime) {
-                                startCountdown();
+                                const limitTime = userData.limitReachedTime.seconds ? 
+                                    new Date(userData.limitReachedTime.seconds * 1000) : 
+                                    new Date(userData.limitReachedTime);
+                                
+                                const now = new Date();
+                                const timeDiff = limitTime.getTime() + (24 * 60 * 60 * 1000) - now.getTime();
+                                
+                                // Only start countdown if 24 hours haven't passed yet
+                                if (timeDiff > 0) {
+                                    startCountdown();
+                                }
                             }
                             
                             // Save to cache to ensure consistency
@@ -1542,6 +1822,7 @@
             loadConversionRate();
             loadTasks();
             loadWithdrawalHistory();
+            loadVoucherHistory();
             
             // Set up auto-save every 30 seconds to prevent data loss
             setInterval(() => {
@@ -1625,6 +1906,12 @@
                         userWithdrawals = JSON.parse(cachedWithdrawals);
                         renderWithdrawalHistory();
                     }
+                    
+                    const cachedVouchers = localStorage.getItem(`tap_earn_vouchers_${userData.telegramId}`);
+                    if (cachedVouchers) {
+                        userVouchers = JSON.parse(cachedVouchers);
+                        renderVoucherHistory();
+                    }
                 }
             } catch (error) {
                 console.error('Error loading from cache:', error);
@@ -1638,6 +1925,7 @@
                     userData.lastUpdated = Date.now();
                     localStorage.setItem(`tap_earn_user_${userData.telegramId}`, JSON.stringify(userData));
                     localStorage.setItem(`tap_earn_withdrawals_${userData.telegramId}`, JSON.stringify(userWithdrawals));
+                    localStorage.setItem(`tap_earn_vouchers_${userData.telegramId}`, JSON.stringify(userVouchers));
                 }
             } catch (error) {
                 console.error('Error saving to cache:', error);
@@ -1801,6 +2089,9 @@
                     case 'createWithdrawal':
                         createWithdrawalRequest(action.data);
                         break;
+                    case 'createVoucher':
+                        createVoucherRequest(action.data);
+                        break;
                 }
             });
         }
@@ -1833,6 +2124,7 @@
             updateProfileDisplay();
             updateUsdtEquivalent();
             updateLevelProgress();
+            updateVoucherUI();
         }
 
         // Update level based on total taps
@@ -1925,6 +2217,11 @@
                     if (sectionId === 'tasks-section') {
                         loadTasks();
                     }
+                    
+                    if (sectionId === 'voucher-section') {
+                        updateVoucherUI();
+                        loadVoucherHistory();
+                    }
                 });
             });
         }
@@ -1983,9 +2280,232 @@
                 }
             });
             
+            // Voucher modal event listeners
+            confirmVoucherBtn.addEventListener('click', redeemVoucher);
+            cancelVoucherBtn.addEventListener('click', function() {
+                voucherModal.style.display = 'none';
+                selectedVoucher = null;
+            });
+            
             if (adminPanel.style.display !== 'none') {
                 initializeAdminEvents();
             }
+        }
+
+        // Initialize Voucher Shop
+        function initializeVoucherShop() {
+            renderVoucherCategories();
+        }
+
+        // Render voucher categories
+        function renderVoucherCategories() {
+            voucherCategoriesElement.innerHTML = '';
+            
+            voucherCategories.forEach(category => {
+                const categoryElement = document.createElement('div');
+                categoryElement.className = 'voucher-category';
+                
+                let categoryHTML = `<h3>${category.name}</h3><div class="voucher-items">`;
+                
+                category.items.forEach(voucher => {
+                    const canAfford = userData.coins >= voucher.price;
+                    
+                    categoryHTML += `
+                        <div class="voucher-item">
+                            <div class="voucher-info">
+                                <div class="voucher-name">${voucher.name}</div>
+                                <div class="voucher-price">${voucher.price.toLocaleString()} coins</div>
+                            </div>
+                            <button class="voucher-button" data-name="${voucher.name}" data-price="${voucher.price}" ${!canAfford ? 'disabled' : ''}>
+                                ${canAfford ? 'Redeem' : 'Not Enough'}
+                            </button>
+                        </div>
+                    `;
+                });
+                
+                categoryHTML += '</div>';
+                categoryElement.innerHTML = categoryHTML;
+                voucherCategoriesElement.appendChild(categoryElement);
+            });
+            
+            // Add event listeners to voucher buttons
+            document.querySelectorAll('.voucher-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const voucherName = this.getAttribute('data-name');
+                    const voucherPrice = parseInt(this.getAttribute('data-price'));
+                    
+                    showVoucherModal(voucherName, voucherPrice);
+                });
+            });
+        }
+
+        // Show voucher redemption modal
+        function showVoucherModal(name, price) {
+            selectedVoucher = { name, price };
+            
+            voucherModalTitle.textContent = `Redeem ${name}`;
+            voucherModalDescription.textContent = `Are you sure you want to redeem ${name}?`;
+            voucherModalCost.textContent = price.toLocaleString();
+            voucherModalBalance.textContent = userData.coins.toLocaleString();
+            
+            // Update button state based on affordability
+            if (userData.coins < price) {
+                confirmVoucherBtn.disabled = true;
+                confirmVoucherBtn.textContent = 'Not Enough Coins';
+            } else {
+                confirmVoucherBtn.disabled = false;
+                confirmVoucherBtn.textContent = 'Redeem Now';
+            }
+            
+            voucherModal.style.display = 'flex';
+        }
+
+        // Redeem voucher
+        function redeemVoucher() {
+            if (!selectedVoucher) return;
+            
+            const { name, price } = selectedVoucher;
+            
+            if (userData.coins < price) {
+                alert('⚠️ You don\'t have enough coins for this voucher.');
+                voucherModal.style.display = 'none';
+                return;
+            }
+            
+            // Deduct coins
+            userData.coins -= price;
+            updateUI();
+            
+            // Create voucher request
+            const voucherData = {
+                userId: userData.telegramId,
+                username: userData.username,
+                voucherName: name,
+                voucherPrice: price,
+                status: 'Pending',
+                timestamp: new Date(),
+                voucherCode: '' // Will be filled by admin
+            };
+            
+            userVouchers.unshift(voucherData);
+            renderVoucherHistory();
+            saveToCache();
+            updateUserData();
+            
+            if (!isOnline) {
+                pendingActions.push({
+                    type: 'createVoucher',
+                    data: voucherData
+                });
+                alert('✅ Your redemption request has been received! It will be processed soon.');
+                voucherModal.style.display = 'none';
+                selectedVoucher = null;
+                return;
+            }
+            
+            createVoucherRequest(voucherData);
+        }
+
+        // Create voucher request in Firebase
+        function createVoucherRequest(voucherData) {
+            db.collection('vouchers').add(voucherData)
+                .then((docRef) => {
+                    const index = userVouchers.findIndex(v => 
+                        v.timestamp.getTime() === voucherData.timestamp.getTime()
+                    );
+                    if (index !== -1) {
+                        userVouchers[index].id = docRef.id;
+                        renderVoucherHistory();
+                        saveToCache();
+                    }
+                    
+                    alert('✅ Your redemption request for ' + voucherData.voucherName + ' has been received! It will be processed soon.');
+                    voucherModal.style.display = 'none';
+                    selectedVoucher = null;
+                })
+                .catch(error => {
+                    console.error('Error creating voucher request:', error);
+                    // Refund coins
+                    userData.coins += voucherData.voucherPrice;
+                    updateUI();
+                    updateUserData();
+                    
+                    const index = userVouchers.findIndex(v => 
+                        v.timestamp.getTime() === voucherData.timestamp.getTime()
+                    );
+                    if (index !== -1) {
+                        userVouchers.splice(index, 1);
+                        renderVoucherHistory();
+                        saveToCache();
+                    }
+                    
+                    alert('Error submitting voucher request. Coins have been refunded. Please try again.');
+                });
+        }
+
+        // Load voucher history
+        function loadVoucherHistory() {
+            if (!userData.telegramId) return;
+            
+            renderVoucherHistory();
+            
+            db.collection('vouchers')
+                .where('userId', '==', userData.telegramId)
+                .orderBy('timestamp', 'desc')
+                .get()
+                .then(querySnapshot => {
+                    userVouchers = [];
+                    querySnapshot.forEach(doc => {
+                        const data = doc.data();
+                        data.id = doc.id;
+                        data.timestamp = data.timestamp.toDate();
+                        userVouchers.push(data);
+                    });
+                    renderVoucherHistory();
+                    saveToCache();
+                })
+                .catch(error => {
+                    console.error('Error loading voucher history:', error);
+                });
+        }
+
+        // Render voucher history
+        function renderVoucherHistory() {
+            voucherHistory.innerHTML = '';
+            
+            if (userVouchers.length === 0) {
+                voucherHistory.innerHTML = '<tr><td colspan="4" style="text-align: center;">No voucher redemptions yet</td></tr>';
+                return;
+            }
+            
+            userVouchers.forEach(voucher => {
+                const date = voucher.timestamp.toLocaleDateString();
+                const statusClass = `status-${voucher.status.toLowerCase()}`;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${voucher.voucherName}</td>
+                    <td>${voucher.voucherPrice.toLocaleString()} coins</td>
+                    <td class="${statusClass}">${voucher.status}</td>
+                `;
+                voucherHistory.appendChild(row);
+            });
+        }
+
+        // Update voucher UI
+        function updateVoucherUI() {
+            voucherCoinsDisplay.textContent = userData.coins.toLocaleString();
+            voucherRedemptions.textContent = userVouchers.length;
+            
+            // Update voucher buttons based on affordability
+            document.querySelectorAll('.voucher-button').forEach(button => {
+                const price = parseInt(button.getAttribute('data-price'));
+                const canAfford = userData.coins >= price;
+                
+                button.disabled = !canAfford;
+                button.textContent = canAfford ? 'Redeem' : 'Not Enough';
+            });
         }
 
         // Handle coin tap
@@ -2507,6 +3027,7 @@
             loadAdminStatistics();
             loadAdminWithdrawals();
             loadAdminTasks();
+            loadAdminVouchers();
             initializeAdminEvents();
             setupAdminRealTimeListeners();
         }
@@ -2536,6 +3057,15 @@
                 }, error => {
                     console.error('Users listener error:', error);
                 });
+            
+            // Real-time listener for vouchers
+            db.collection('vouchers')
+                .orderBy('timestamp', 'desc')
+                .onSnapshot(querySnapshot => {
+                    loadAdminVouchers();
+                }, error => {
+                    console.error('Vouchers listener error:', error);
+                });
         }
 
         function initializeAdminEvents() {
@@ -2558,6 +3088,148 @@
             createInterstitialAdBtn.addEventListener('click', function() {
                 createQuickAdTask('interstitial_ad', parseInt(interstitialAdReward.value));
             });
+            
+            // Voucher approval
+            approveVoucherBtn.addEventListener('click', function() {
+                approveVoucher();
+            });
+            
+            // Add coins to user
+            addCoinsBtn.addEventListener('click', function() {
+                addCoinsToUser();
+            });
+        }
+
+        // Add coins to user from admin panel
+        function addCoinsToUser() {
+            const userId = addCoinsUserId.value;
+            const amount = parseInt(addCoinsAmount.value);
+            
+            if (!userId || isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid user ID and positive amount');
+                return;
+            }
+            
+            const userRef = db.collection('users').doc(userId);
+            
+            db.runTransaction(transaction => {
+                return transaction.get(userRef).then(doc => {
+                    if (!doc.exists) {
+                        throw new Error('User does not exist!');
+                    }
+                    
+                    const currentCoins = doc.data().coins || 0;
+                    const currentTotalCoins = doc.data().totalCoins || 0;
+                    
+                    transaction.update(userRef, {
+                        coins: currentCoins + amount,
+                        totalCoins: currentTotalCoins + amount,
+                        lastUpdated: Date.now()
+                    });
+                });
+            }).then(() => {
+                alert(`Successfully added ${amount.toLocaleString()} coins to user ${userId}`);
+                addCoinsUserId.value = '';
+                addCoinsAmount.value = '';
+                
+                // Reload admin statistics to reflect the change
+                loadAdminStatistics();
+            }).catch(error => {
+                console.error('Error adding coins:', error);
+                alert('Error adding coins: ' + error.message);
+            });
+        }
+
+        // Load admin vouchers
+        function loadAdminVouchers() {
+            db.collection('vouchers')
+                .orderBy('timestamp', 'desc')
+                .get()
+                .then(querySnapshot => {
+                    adminVouchers.innerHTML = '';
+                    
+                    if (querySnapshot.empty) {
+                        adminVouchers.innerHTML = '<tr><td colspan="7" style="text-align: center;">No voucher requests</td></tr>';
+                        return;
+                    }
+                    
+                    querySnapshot.forEach(doc => {
+                        const data = doc.data();
+                        const date = data.timestamp.toDate().toLocaleDateString();
+                        const statusClass = `status-${data.status.toLowerCase()}`;
+                        
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${data.userId}</td>
+                            <td>${data.username || 'N/A'}</td>
+                            <td>${data.voucherName}</td>
+                            <td>${data.voucherPrice.toLocaleString()} coins</td>
+                            <td>${date}</td>
+                            <td class="${statusClass}">${data.status}</td>
+                            <td>
+                                ${data.status === 'Pending' ? `
+                                    <button class="btn" onclick="approveVoucherById('${doc.id}', '${data.userId}', '${data.voucherName}')">Approve</button>
+                                ` : 'No actions'}
+                            </td>
+                        `;
+                        adminVouchers.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading admin vouchers:', error);
+                });
+        }
+
+        // Approve voucher by ID
+        window.approveVoucherById = function(voucherId, userId, voucherName) {
+            voucherUserId.value = userId;
+            voucherName.value = voucherName;
+            alert(`Please enter the voucher code for ${voucherName} and click "Approve Voucher"`);
+        };
+
+        // Approve voucher
+        function approveVoucher() {
+            const userId = voucherUserId.value;
+            const voucherNameValue = voucherName.value;
+            const voucherCodeValue = voucherCode.value;
+            
+            if (!userId || !voucherNameValue || !voucherCodeValue) {
+                alert('Please fill all fields');
+                return;
+            }
+            
+            // Find and update the voucher
+            db.collection('vouchers')
+                .where('userId', '==', userId)
+                .where('voucherName', '==', voucherNameValue)
+                .where('status', '==', 'Pending')
+                .get()
+                .then(querySnapshot => {
+                    if (querySnapshot.empty) {
+                        alert('No pending voucher found for this user');
+                        return;
+                    }
+                    
+                    const batch = db.batch();
+                    querySnapshot.forEach(doc => {
+                        batch.update(doc.ref, {
+                            status: 'Approved',
+                            voucherCode: voucherCodeValue
+                        });
+                    });
+                    
+                    return batch.commit();
+                })
+                .then(() => {
+                    alert('Voucher approved successfully!');
+                    voucherUserId.value = '';
+                    voucherName.value = '';
+                    voucherCode.value = '';
+                })
+                .catch(error => {
+                    console.error('Error approving voucher:', error);
+                    alert('Error approving voucher. Please try again.');
+                });
         }
 
         // Create quick ad task (simplified) - FIXED VERSION
