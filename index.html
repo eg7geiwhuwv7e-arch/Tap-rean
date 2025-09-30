@@ -17,7 +17,6 @@
             -webkit-touch-callout: none;
         }
 
-        /* FIX: Allow scrolling and zooming only for admin panel */
         html, body {
             touch-action: manipulation;
             overflow: hidden;
@@ -26,7 +25,6 @@
             position: fixed;
         }
 
-        /* FIX: Allow scrolling in admin panel */
         body.admin-mode {
             position: static !important;
             overflow: auto !important;
@@ -34,7 +32,6 @@
             min-height: 100vh;
         }
 
-        /* FIX: Admin panel specific styles for scrolling */
         #admin-panel {
             display: none;
             position: relative;
@@ -52,7 +49,6 @@
             display: none !important;
         }
 
-        /* Rest of your existing CSS remains the same */
         :root {
             --bg-primary: rgba(18, 18, 18, 0.85);
             --bg-secondary: rgba(30, 30, 30, 0.9);
@@ -78,7 +74,6 @@
             user-select: none;
         }
 
-        /* Loading Screen Styles */
         #loading-screen {
             position: fixed;
             top: 0;
@@ -354,7 +349,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* Fix for tasks section scrolling */
         #tasks-section, #voucher-section {
             height: calc(100vh - 100px);
             overflow-y: auto;
@@ -534,7 +528,6 @@
             display: none;
             padding: 20px;
             padding-bottom: 30px;
-            /* FIX: Allow scrolling in admin panel */
             overflow-y: auto;
             height: auto;
             min-height: 100vh;
@@ -600,18 +593,6 @@
             }
         }
 
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
-            }
-            50% {
-                box-shadow: 0 10px 40px rgba(0, 212, 255, 0.7);
-            }
-            100% {
-                box-shadow: 0 10px 30px rgba(0, 212, 255, 0.4);
-            }
-        }
-
         .text-center {
             text-align: center;
         }
@@ -633,7 +614,6 @@
                 max-width: 600px;
             }
             
-            /* FIX: Better admin panel layout on desktop */
             .admin-panel .container {
                 max-width: 1200px;
             }
@@ -827,44 +807,6 @@
             grid-column: 1 / -1;
         }
 
-        /* New styles for enhanced features */
-        .level-progress {
-            margin-top: 15px;
-            background-color: var(--bg-secondary);
-            border-radius: var(--border-radius);
-            padding: 15px;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .progress-bar {
-            height: 10px;
-            background-color: #333;
-            border-radius: 5px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
-            border-radius: 5px;
-            transition: width 0.5s ease;
-        }
-
-        .level-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .coin-bonus {
-            font-size: 12px;
-            color: var(--accent);
-            margin-top: 5px;
-        }
-
         .coin-display {
             font-size: 28px;
             font-weight: bold;
@@ -896,7 +838,6 @@
             display: none;
         }
 
-        /* Voucher Shop Styles */
         .voucher-categories {
             display: flex;
             flex-direction: column;
@@ -991,7 +932,6 @@
             grid-column: 1 / -1;
         }
 
-        /* Admin Add Coins Styles */
         .add-coins-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1004,6 +944,15 @@
 
         .add-coins-form .full-width {
             grid-column: 1 / -1;
+        }
+        
+        .daily-limit-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            text-align: center;
+            backdrop-filter: blur(10px);
         }
     </style>
     
@@ -1080,12 +1029,12 @@
                             <div class="stat-label">Coins</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value" id="level-display">1</div>
-                            <div class="stat-label">Level</div>
+                            <div class="stat-value" id="taps-per-tap">1.0</div>
+                            <div class="stat-label">Coins/Tap</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value" id="taps-per-second">1.0</div>
-                            <div class="stat-label">Coins/Tap</div>
+                            <div class="stat-value" id="daily-taps">0/1000</div>
+                            <div class="stat-label">Today's Taps</div>
                         </div>
                     </div>
                 </div>
@@ -1095,21 +1044,14 @@
                         <div class="coin-glow"></div>
                         <img src="https://i.ibb.co/CpQM52FW/image.jpg" alt="Tap Coin" class="coin-image">
                     </div>
-                    <div class="tap-info" id="tap-info">Tap the coin to earn! (0/1000 today)</div>
+                    <div class="tap-info" id="tap-info">Tap the coin to earn 1 coin per tap!</div>
                     
-                    <!-- Level Progress -->
-                    <div class="level-progress">
-                        <div class="level-info">
-                            <span>Level <span id="current-level">1</span></span>
-                            <span><span id="current-taps">0</span> / <span id="required-taps">10000</span> Taps</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="level-progress" style="width: 0%"></div>
-                        </div>
-                        <div class="coin-bonus" id="coin-bonus">Next Level: 1.1 coins/tap</div>
+                    <!-- Daily Limit Info -->
+                    <div class="daily-limit-info">
+                        <h3>Daily Limit: 1,000 Taps</h3>
+                        <p>You can tap 1,000 times per day. Reset in:</p>
+                        <div class="countdown-timer hidden" id="countdown-timer">24:00:00</div>
                     </div>
-                    
-                    <div class="countdown-timer hidden" id="countdown-timer">Next tap available in: 24:00:00</div>
                 </div>
             </div>
         </section>
@@ -1192,11 +1134,11 @@
                             <div class="stat-label">Coins</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value" id="profile-level">1</div>
-                            <div class="stat-label">Level</div>
+                            <div class="stat-value" id="profile-today-taps">0/1000</div>
+                            <div class="stat-label">Today's Taps</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value" id="profile-taps">0</div>
+                            <div class="stat-value" id="profile-total-taps">0</div>
                             <div class="stat-label">Total Taps</div>
                         </div>
                     </div>
@@ -1453,56 +1395,19 @@
             profilePic: '',
             coins: 0,
             totalCoins: 0,
-            level: 1,
             tapsToday: 0,
             lastTapDate: null,
             limitReachedTime: null,
             referredBy: null,
             completedTasks: [],
             lastUpdated: null,
-            totalTaps: 0, // New field to track total taps for leveling
-            tasksCompletedAt: null // New field to track when all tasks were completed
+            totalTaps: 0,
+            tasksCompletedAt: null
         };
 
-        // Level System Configuration
-        const levelRequirements = [
-            0,     // Level 1: 0 taps
-            10000, // Level 2: 10,000 taps
-            30000, // Level 3: 30,000 taps
-            60000, // Level 4: 60,000 taps
-            100000, // Level 5: 100,000 taps
-            150000, // Level 6: 150,000 taps
-            210000, // Level 7: 210,000 taps
-            280000, // Level 8: 280,000 taps
-            360000, // Level 9: 360,000 taps
-            450000  // Level 10: 450,000 taps
-        ];
-
-        const coinsPerTap = [
-            1.0,   // Level 1
-            1.1,   // Level 2
-            1.2,   // Level 3
-            1.3,   // Level 4
-            1.4,   // Level 5
-            1.5,   // Level 6
-            1.6,   // Level 7
-            1.7,   // Level 8
-            1.8,   // Level 9
-            2.0    // Level 10
-        ];
-
-        const dailyTapLimits = [
-            1000,  // Level 1
-            1200,  // Level 2
-            1400,  // Level 3
-            1600,  // Level 4
-            1800,  // Level 5
-            2000,  // Level 6
-            2200,  // Level 7
-            2400,  // Level 8
-            2600,  // Level 9
-            3000   // Level 10
-        ];
+        // Fixed values - no leveling system
+        const FIXED_DAILY_TAP_LIMIT = 1000;
+        const FIXED_COINS_PER_TAP = 1.0;
 
         // Voucher Configuration
         const voucherCategories = [
@@ -1545,7 +1450,7 @@
         let countdownInterval = null;
         let adCountdownInterval = null;
         let lastAdShownTime = 0;
-        const AD_INTERVAL = 120000; // 2 minutes in milliseconds
+        const AD_INTERVAL = 120000;
         let tasksResetInterval = null;
         let loadingScreenInterval = null;
         let selectedVoucher = null;
@@ -1575,15 +1480,15 @@
         const sections = document.querySelectorAll('.section');
         const navItems = document.querySelectorAll('.nav-item');
         const coinsDisplay = document.getElementById('coins-display');
-        const levelDisplay = document.getElementById('level-display');
-        const tapsPerSecond = document.getElementById('taps-per-second');
+        const tapsPerTap = document.getElementById('taps-per-tap');
+        const dailyTaps = document.getElementById('daily-taps');
         const tasksList = document.getElementById('tasks-list');
         const profilePic = document.getElementById('profile-pic');
         const profileName = document.getElementById('profile-name');
         const profileId = document.getElementById('profile-id');
         const profileCoins = document.getElementById('profile-coins');
-        const profileLevel = document.getElementById('profile-level');
-        const profileTaps = document.getElementById('profile-taps');
+        const profileTodayTaps = document.getElementById('profile-today-taps');
+        const profileTotalTaps = document.getElementById('profile-total-taps');
         const referralLink = document.getElementById('referral-link');
         const copyReferralBtn = document.getElementById('copy-referral');
         const exchangeRateDisplay = document.getElementById('exchange-rate');
@@ -1598,13 +1503,6 @@
         const voucherRedemptions = document.getElementById('voucher-redemptions');
         const voucherCategoriesElement = document.getElementById('voucher-categories');
         const voucherHistory = document.getElementById('voucher-history');
-        
-        // New DOM Elements for Level System
-        const currentLevel = document.getElementById('current-level');
-        const currentTaps = document.getElementById('current-taps');
-        const requiredTaps = document.getElementById('required-taps');
-        const levelProgress = document.getElementById('level-progress');
-        const coinBonus = document.getElementById('coin-bonus');
         
         // New DOM Elements for Task Timer
         const tasksResetTimer = document.getElementById('tasks-reset-timer');
@@ -1690,15 +1588,15 @@
             }, 1000);
         }
 
-        // Initialize interstitial ads using Monotag - FIXED VERSION
+        // Initialize interstitial ads using Monotag
         function initializeInterstitialAds() {
             if (typeof show_9943956 === 'function') {
                 show_9943956({ 
                     type: 'inApp', 
                     inAppSettings: { 
-                        frequency: 1, // Reduced frequency
-                        capping: 0.05, // Reduced capping
-                        interval: 120, // Changed from 30 to 120 seconds (2 minutes)
+                        frequency: 1,
+                        capping: 0.05,
+                        interval: 120,
                         timeout: 5, 
                         everyPage: false 
                     } 
@@ -1710,7 +1608,6 @@
         function checkInterstitialAd() {
             const now = Date.now();
             if (now - lastAdShownTime > AD_INTERVAL) {
-                // Show interstitial ad
                 if (typeof show_9943956 === 'function') {
                     show_9943956({ type: 'inApp' });
                     lastAdShownTime = now;
@@ -1720,7 +1617,6 @@
 
         // Hide loading screen and show app
         function hideLoadingScreen() {
-            // Clear the interval if it's still running
             if (loadingScreenInterval) {
                 clearInterval(loadingScreenInterval);
             }
@@ -1732,17 +1628,15 @@
             }, 500);
         }
 
-        // Initialize admin access with password - FIXED VERSION
+        // Initialize admin access with password
         function initializeAdminAccess() {
             submitPasswordBtn.addEventListener('click', function() {
                 const password = adminPasswordInput.value;
                 if (password === 'admin123') {
                     passwordModal.style.display = 'none';
-                    // FIX: Enable admin mode for scrolling and zooming
                     document.body.classList.add('admin-mode');
                     adminPanel.style.display = 'block';
                     initializeAdminPanel();
-                    // The loading screen will auto-hide after 5 seconds
                 } else {
                     alert('Invalid password!');
                 }
@@ -1777,7 +1671,6 @@
             
             checkReferral();
             
-            // Set up periodic ad check every 30 seconds
             setInterval(checkInterstitialAd, 30000);
         }
 
@@ -1803,9 +1696,8 @@
                 });
         }
 
-        // Load user data from Firebase with caching - FIXED VERSION
+        // Load user data from Firebase with caching
         function loadUserData() {
-            // Always load from cache first for immediate UI
             loadFromCache();
             
             if (userData.telegramId) {
@@ -1814,17 +1706,14 @@
                         if (doc.exists) {
                             const data = doc.data();
                             
-                            // Use timestamp to determine which data is newer
                             const cachedTimestamp = userData.lastUpdated || 0;
                             const firebaseTimestamp = data.lastUpdated ? 
                                 (data.lastUpdated.seconds ? data.lastUpdated.seconds * 1000 : data.lastUpdated) : 0;
                             
-                            // If Firebase data is newer, use it
                             if (firebaseTimestamp > cachedTimestamp) {
                                 userData = { ...userData, ...data };
                                 console.log('Using newer Firebase data');
                             } else {
-                                // Our cached data is newer, update Firebase
                                 updateUserData();
                                 console.log('Using cached data, updating Firebase');
                             }
@@ -1833,7 +1722,7 @@
                             checkTasksReset();
                             updateUI();
                             
-                            // FIX: Check if we need to start the countdown timer when app loads
+                            // FIX: Properly handle limit reached state
                             if (userData.limitReachedTime) {
                                 const limitTime = userData.limitReachedTime.seconds ? 
                                     new Date(userData.limitReachedTime.seconds * 1000) : 
@@ -1842,13 +1731,16 @@
                                 const now = new Date();
                                 const timeDiff = limitTime.getTime() + (24 * 60 * 60 * 1000) - now.getTime();
                                 
-                                // Only start countdown if 24 hours haven't passed yet
                                 if (timeDiff > 0) {
                                     startCountdown();
+                                } else {
+                                    // If 24 hours have passed, reset the limit
+                                    userData.tapsToday = 0;
+                                    userData.limitReachedTime = null;
+                                    updateUserData();
                                 }
                             }
                             
-                            // Save to cache to ensure consistency
                             saveToCache();
                         } else {
                             createUserDocument();
@@ -1867,7 +1759,6 @@
             loadWithdrawalHistory();
             loadVoucherHistory();
             
-            // Set up auto-save every 30 seconds to prevent data loss
             setInterval(() => {
                 if (userData.telegramId) {
                     saveToCache();
@@ -1880,7 +1771,6 @@
         function createUserDocument() {
             userData.coins = 100;
             userData.totalCoins = 100;
-            userData.level = 1;
             userData.tapsToday = 0;
             userData.totalTaps = 0;
             userData.lastTapDate = new Date();
@@ -1929,7 +1819,7 @@
             });
         }
 
-        // Load data from localStorage cache - FIXED VERSION
+        // Load data from localStorage cache
         function loadFromCache() {
             try {
                 if (userData.telegramId) {
@@ -1937,7 +1827,6 @@
                     if (cached) {
                         const data = JSON.parse(cached);
                         
-                        // Only update if we have valid cached data
                         if (data && data.telegramId === userData.telegramId) {
                             userData = { ...userData, ...data };
                             updateUI();
@@ -1961,7 +1850,7 @@
             }
         }
 
-        // Save data to localStorage cache - FIXED VERSION
+        // Save data to localStorage cache
         function saveToCache() {
             try {
                 if (userData.telegramId) {
@@ -2025,13 +1914,11 @@
                 const hoursPassed = (now - completedTime) / (1000 * 60 * 60);
                 
                 if (hoursPassed >= 24) {
-                    // Reset completed tasks
                     userData.completedTasks = [];
                     userData.tasksCompletedAt = null;
                     updateUserData();
                     loadTasks();
                 } else {
-                    // Start timer for tasks reset
                     startTasksResetTimer(completedTime);
                 }
             }
@@ -2050,7 +1937,6 @@
                 const timeDiff = completedTime.getTime() + (24 * 60 * 60 * 1000) - now.getTime();
                 
                 if (timeDiff <= 0) {
-                    // Reset completed tasks
                     userData.completedTasks = [];
                     userData.tasksCompletedAt = null;
                     updateUserData();
@@ -2069,11 +1955,10 @@
             }, 1000);
         }
 
-        // Update user data in Firebase - FIXED VERSION
+        // Update user data in Firebase
         function updateUserData() {
             if (!userData.telegramId) return;
             
-            // Always save to cache first for immediate persistence
             saveToCache();
             
             if (!isOnline) {
@@ -2084,7 +1969,6 @@
                 return;
             }
             
-            // Use set with merge instead of update to ensure all fields are preserved
             userData.lastUpdated = Date.now();
             db.collection('users').doc(userData.telegramId).set(userData, { merge: true })
                 .then(() => {
@@ -2141,10 +2025,6 @@
 
         // Update the UI with current user data
         function updateUI() {
-            // Update level first
-            updateLevel();
-            
-            // Format coins with commas and animation
             const coinsValue = userData.coins.toLocaleString();
             if (coinsDisplay.textContent !== coinsValue) {
                 coinsDisplay.classList.add('increase');
@@ -2154,71 +2034,14 @@
             }
             coinsDisplay.textContent = coinsValue;
             
-            levelDisplay.textContent = userData.level;
+            tapsPerTap.textContent = FIXED_COINS_PER_TAP.toFixed(1);
+            dailyTaps.textContent = `${userData.tapsToday}/${FIXED_DAILY_TAP_LIMIT}`;
             
-            // Update taps per second based on level
-            const currentLevelIndex = Math.min(userData.level - 1, coinsPerTap.length - 1);
-            tapsPerSecond.textContent = coinsPerTap[currentLevelIndex].toFixed(1);
-            
-            const dailyLimit = dailyTapLimits[Math.min(userData.level - 1, dailyTapLimits.length - 1)] || 1000;
-            const tapsLeft = Math.max(0, dailyLimit - userData.tapsToday);
-            tapInfo.textContent = `Tap the coin to earn! (${userData.tapsToday}/${dailyLimit} today)`;
+            tapInfo.textContent = `Tap the coin to earn ${FIXED_COINS_PER_TAP} coin per tap!`;
             
             updateProfileDisplay();
             updateUsdtEquivalent();
-            updateLevelProgress();
             updateVoucherUI();
-        }
-
-        // Update level based on total taps
-        function updateLevel() {
-            const totalTaps = userData.totalTaps || 0;
-            let newLevel = 1;
-            
-            // Find the highest level the user has achieved
-            for (let i = 1; i < levelRequirements.length; i++) {
-                if (totalTaps >= levelRequirements[i]) {
-                    newLevel = i + 1;
-                } else {
-                    break;
-                }
-            }
-            
-            // Check if level increased
-            if (newLevel > userData.level) {
-                const oldLevel = userData.level;
-                userData.level = newLevel;
-                
-                // Show level up message
-                alert(`🎉 Level Up! You reached level ${newLevel}! You now earn ${coinsPerTap[newLevel-1]} coins per tap!`);
-            }
-        }
-
-        // Update level progress bar
-        function updateLevelProgress() {
-            const totalTaps = userData.totalTaps || 0;
-            const currentLevelIndex = Math.min(userData.level - 1, levelRequirements.length - 1);
-            const nextLevelIndex = Math.min(userData.level, levelRequirements.length - 1);
-            
-            const currentLevelTaps = levelRequirements[currentLevelIndex];
-            const nextLevelTaps = levelRequirements[nextLevelIndex];
-            
-            const tapsForNextLevel = nextLevelTaps - currentLevelTaps;
-            const userProgress = totalTaps - currentLevelTaps;
-            
-            const progressPercentage = Math.min(100, (userProgress / tapsForNextLevel) * 100);
-            
-            currentLevel.textContent = userData.level;
-            currentTaps.textContent = totalTaps.toLocaleString();
-            requiredTaps.textContent = nextLevelTaps.toLocaleString();
-            levelProgress.style.width = `${progressPercentage}%`;
-            
-            // Update coin bonus text
-            if (userData.level < coinsPerTap.length) {
-                coinBonus.textContent = `Next Level: ${coinsPerTap[userData.level].toFixed(1)} coins/tap`;
-            } else {
-                coinBonus.textContent = `Max Level: ${coinsPerTap[coinsPerTap.length-1].toFixed(1)} coins/tap`;
-            }
         }
 
         // Update profile display
@@ -2226,15 +2049,14 @@
             if (userData.profilePic) {
                 profilePic.innerHTML = `<img src="${userData.profilePic}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%;">`;
             } else {
-                // Use the default profile image
                 profilePic.innerHTML = `<img src="https://i.ibb.co/0RFyTvZH/image.jpg" alt="Profile">`;
             }
             
             profileName.textContent = userData.username || 'User';
             profileId.textContent = `ID: ${userData.telegramId}`;
             profileCoins.textContent = userData.coins.toLocaleString();
-            profileLevel.textContent = userData.level;
-            profileTaps.textContent = (userData.totalTaps || 0).toLocaleString();
+            profileTodayTaps.textContent = `${userData.tapsToday}/${FIXED_DAILY_TAP_LIMIT}`;
+            profileTotalTaps.textContent = (userData.totalTaps || 0).toLocaleString();
             
             if (userData.telegramId) {
                 referralLink.value = `https://t.me/TapEarn82_bot?start=ref_${userData.telegramId}`;
@@ -2371,7 +2193,6 @@
                 voucherCategoriesElement.appendChild(categoryElement);
             });
             
-            // Add event listeners to voucher buttons
             document.querySelectorAll('.voucher-button').forEach(button => {
                 button.addEventListener('click', function() {
                     const voucherName = this.getAttribute('data-name');
@@ -2391,7 +2212,6 @@
             voucherModalCost.textContent = price.toLocaleString();
             voucherModalBalance.textContent = userData.coins.toLocaleString();
             
-            // Update button state based on affordability
             if (userData.coins < price) {
                 confirmVoucherBtn.disabled = true;
                 confirmVoucherBtn.textContent = 'Not Enough Coins';
@@ -2415,11 +2235,9 @@
                 return;
             }
             
-            // Deduct coins
             userData.coins -= price;
             updateUI();
             
-            // Create voucher request
             const voucherData = {
                 userId: userData.telegramId,
                 username: userData.username,
@@ -2427,7 +2245,7 @@
                 voucherPrice: price,
                 status: 'Pending',
                 timestamp: new Date(),
-                voucherCode: '' // Will be filled by admin
+                voucherCode: ''
             };
             
             userVouchers.unshift(voucherData);
@@ -2468,7 +2286,6 @@
                 })
                 .catch(error => {
                     console.error('Error creating voucher request:', error);
-                    // Refund coins
                     userData.coins += voucherData.voucherPrice;
                     updateUI();
                     updateUserData();
@@ -2541,7 +2358,6 @@
             voucherCoinsDisplay.textContent = userData.coins.toLocaleString();
             voucherRedemptions.textContent = userVouchers.length;
             
-            // Update voucher buttons based on affordability
             document.querySelectorAll('.voucher-button').forEach(button => {
                 const price = parseInt(button.getAttribute('data-price'));
                 const canAfford = userData.coins >= price;
@@ -2551,21 +2367,20 @@
             });
         }
 
-        // Handle coin tap
+        // Handle coin tap with fixed daily limit
         function handleTap() {
-            const dailyLimit = dailyTapLimits[Math.min(userData.level - 1, dailyTapLimits.length - 1)] || 1000;
-            
-            if (userData.tapsToday >= dailyLimit) {
+            // Check if daily limit is reached BEFORE processing the tap
+            if (userData.tapsToday >= FIXED_DAILY_TAP_LIMIT) {
                 if (!userData.limitReachedTime) {
                     userData.limitReachedTime = new Date();
                     startCountdown();
+                    alert(`Daily limit reached! You can tap again in 24 hours.`);
                 }
-                return;
+                return; // Return early to prevent further processing
             }
             
-            // Calculate coins earned based on level
-            const currentLevelIndex = Math.min(userData.level - 1, coinsPerTap.length - 1);
-            const coinsEarned = coinsPerTap[currentLevelIndex];
+            // Calculate coins earned
+            const coinsEarned = FIXED_COINS_PER_TAP;
             
             userData.coins += coinsEarned;
             userData.totalCoins += coinsEarned;
@@ -2573,20 +2388,36 @@
             userData.totalTaps = (userData.totalTaps || 0) + 1;
             userData.lastTapDate = new Date();
             
-            if (userData.tapsToday >= dailyLimit) {
+            // Check if this tap reached the daily limit
+            if (userData.tapsToday >= FIXED_DAILY_TAP_LIMIT) {
                 userData.limitReachedTime = new Date();
                 startCountdown();
                 alert(`Daily limit reached! You can tap again in 24 hours.`);
             }
             
-            // Check for level up
-            const oldLevel = userData.level;
-            updateLevel();
+            updateCoinsDisplay();
             
-            updateUI();
             saveToCache();
             updateUserData();
             createTapFeedback(coinsEarned);
+        }
+
+        // Update coins display separately
+        function updateCoinsDisplay() {
+            const coinsValue = userData.coins.toLocaleString();
+            if (coinsDisplay.textContent !== coinsValue) {
+                coinsDisplay.classList.add('increase');
+                setTimeout(() => {
+                    coinsDisplay.classList.remove('increase');
+                }, 500);
+            }
+            coinsDisplay.textContent = coinsValue;
+            profileCoins.textContent = userData.coins.toLocaleString();
+            voucherCoinsDisplay.textContent = userData.coins.toLocaleString();
+            
+            // Update daily taps display
+            dailyTaps.textContent = `${userData.tapsToday}/${FIXED_DAILY_TAP_LIMIT}`;
+            profileTodayTaps.textContent = `${userData.tapsToday}/${FIXED_DAILY_TAP_LIMIT}`;
         }
 
         // Start 24-hour countdown timer
@@ -2633,7 +2464,7 @@
             const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
             
-            countdownTimer.textContent = `Next tap available in: ${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            countdownTimer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
         }
 
         // Create tap feedback animation
@@ -2691,7 +2522,7 @@
             }
         }
 
-        // Load tasks from Firebase - COMPLETELY FIXED VERSION
+        // Load tasks from Firebase
         function loadTasks() {
             console.log('Loading tasks from Firebase...');
             
@@ -2702,7 +2533,6 @@
                         const taskData = { 
                             id: doc.id, 
                             ...doc.data(),
-                            // Ensure all required fields exist
                             title: doc.data().title || 'Untitled Task',
                             description: doc.data().description || 'Complete this task to earn coins',
                             reward: doc.data().reward || 10,
@@ -2715,12 +2545,10 @@
                     
                     console.log(`Loaded ${tasks.length} tasks from Firebase`);
                     
-                    // Filter out completed tasks
                     tasks = tasks.filter(task => !userData.completedTasks.includes(task.id));
                     
                     renderTasks();
                     
-                    // Check if all tasks are completed
                     if (tasks.length === 0 && userData.completedTasks.length > 0) {
                         if (!userData.tasksCompletedAt) {
                             userData.tasksCompletedAt = new Date();
@@ -2735,7 +2563,6 @@
                         }
                     }
                     
-                    // Set up real-time listener for tasks
                     db.collection('tasks').where('isActive', '==', true)
                         .onSnapshot(querySnapshot => {
                             const updatedTasks = [];
@@ -2880,7 +2707,7 @@
             }
         }
 
-        // Watch ad (with 10-second timer) - FIXED VERSION
+        // Watch ad (with 10-second timer)
         function watchAd(taskId) {
             currentAdTaskId = taskId;
             const task = tasks.find(t => t.id === taskId);
@@ -2931,7 +2758,6 @@
             
             alert(`Task completed! You earned ${task.reward} coins.`);
             
-            // Check if all tasks are completed
             if (tasks.length === 0) {
                 userData.tasksCompletedAt = new Date();
                 updateUserData();
@@ -3065,7 +2891,7 @@
             });
         }
 
-        // Admin Panel Functions - FIXED VERSION
+        // Admin Panel Functions
         function initializeAdminPanel() {
             loadAdminStatistics();
             loadAdminWithdrawals();
@@ -3076,7 +2902,6 @@
         }
 
         function setupAdminRealTimeListeners() {
-            // Real-time listener for withdrawals
             db.collection('withdrawals')
                 .orderBy('timestamp', 'desc')
                 .onSnapshot(querySnapshot => {
@@ -3085,7 +2910,6 @@
                     console.error('Withdrawals listener error:', error);
                 });
             
-            // Real-time listener for tasks - FIXED VERSION
             db.collection('tasks')
                 .onSnapshot(querySnapshot => {
                     loadAdminTasks();
@@ -3093,7 +2917,6 @@
                     console.error('Tasks listener error:', error);
                 });
             
-            // Real-time listener for users
             db.collection('users')
                 .onSnapshot(querySnapshot => {
                     loadAdminStatistics();
@@ -3101,7 +2924,6 @@
                     console.error('Users listener error:', error);
                 });
             
-            // Real-time listener for vouchers
             db.collection('vouchers')
                 .orderBy('timestamp', 'desc')
                 .onSnapshot(querySnapshot => {
@@ -3112,18 +2934,15 @@
         }
 
         function initializeAdminEvents() {
-            // Task form submission
             taskForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 addTask();
             });
             
-            // Update exchange rate
             updateRateBtn.addEventListener('click', function() {
                 updateExchangeRate();
             });
             
-            // Quick ad task creation
             createPopAdBtn.addEventListener('click', function() {
                 createQuickAdTask('pop_ad', parseInt(popAdReward.value));
             });
@@ -3132,12 +2951,10 @@
                 createQuickAdTask('interstitial_ad', parseInt(interstitialAdReward.value));
             });
             
-            // Voucher approval
             approveVoucherBtn.addEventListener('click', function() {
                 approveVoucher();
             });
             
-            // Add coins to user
             addCoinsBtn.addEventListener('click', function() {
                 addCoinsToUser();
             });
@@ -3145,7 +2962,7 @@
 
         // Add coins to user from admin panel
         function addCoinsToUser() {
-            const userId = addCoinsUserId.value;
+            const userId = addCoinsUserId.value.trim();
             const amount = parseInt(addCoinsAmount.value);
             
             if (!userId || isNaN(amount) || amount <= 0) {
@@ -3153,34 +2970,34 @@
                 return;
             }
             
-            const userRef = db.collection('users').doc(userId);
-            
-            db.runTransaction(transaction => {
-                return transaction.get(userRef).then(doc => {
+            db.collection('users').doc(userId).get()
+                .then(doc => {
                     if (!doc.exists) {
-                        throw new Error('User does not exist!');
+                        alert('User does not exist! Please check the User ID.');
+                        return;
                     }
                     
-                    const currentCoins = doc.data().coins || 0;
-                    const currentTotalCoins = doc.data().totalCoins || 0;
+                    const userData = doc.data();
+                    const currentCoins = userData.coins || 0;
+                    const currentTotalCoins = userData.totalCoins || 0;
                     
-                    transaction.update(userRef, {
+                    return db.collection('users').doc(userId).update({
                         coins: currentCoins + amount,
                         totalCoins: currentTotalCoins + amount,
                         lastUpdated: Date.now()
                     });
+                })
+                .then(() => {
+                    alert(`✅ Successfully added ${amount.toLocaleString()} coins to user ${userId}`);
+                    addCoinsUserId.value = '';
+                    addCoinsAmount.value = '';
+                    
+                    loadAdminStatistics();
+                })
+                .catch(error => {
+                    console.error('Error adding coins:', error);
+                    alert('❌ Error adding coins: ' + error.message);
                 });
-            }).then(() => {
-                alert(`Successfully added ${amount.toLocaleString()} coins to user ${userId}`);
-                addCoinsUserId.value = '';
-                addCoinsAmount.value = '';
-                
-                // Reload admin statistics to reflect the change
-                loadAdminStatistics();
-            }).catch(error => {
-                console.error('Error adding coins:', error);
-                alert('Error adding coins: ' + error.message);
-            });
         }
 
         // Load admin vouchers
@@ -3241,7 +3058,6 @@
                 return;
             }
             
-            // Find and update the voucher
             db.collection('vouchers')
                 .where('userId', '==', userId)
                 .where('voucherName', '==', voucherNameValue)
@@ -3275,7 +3091,7 @@
                 });
         }
 
-        // Create quick ad task (simplified) - FIXED VERSION
+        // Create quick ad task
         function createQuickAdTask(type, reward) {
             if (!reward || reward < 1) {
                 alert('Please enter a valid reward amount!');
