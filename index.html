@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TAP & EARN</title>
     <style>
+        /* Your existing CSS styles remain the same */
         * {
             margin: 0;
             padding: 0;
@@ -1429,7 +1430,8 @@
             completedTasks: [],
             lastUpdated: null,
             totalTaps: 0,
-            tasksCompletedAt: null
+            tasksCompletedAt: null,
+            hasReceivedReferralBonus: false
         };
 
         // Fixed values - no leveling system
@@ -1570,12 +1572,54 @@
             // Start the 5-second loading countdown
             startLoadingCountdown();
             
+            // Initialize the app regardless of Telegram availability
+            initializeApp();
+        });
+
+        // Start 5-second loading countdown - FIXED VERSION
+        function startLoadingCountdown() {
+            let seconds = 3;
+            loadingCountdown.textContent = seconds;
+            
+            loadingScreenInterval = setInterval(() => {
+                seconds--;
+                loadingCountdown.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(loadingScreenInterval);
+                    // Force hide the loading screen after 5 seconds
+                    forceHideLoadingScreen();
+                }
+            }, 1000);
+        }
+
+        // NEW: Force hide loading screen after 5 seconds
+        function forceHideLoadingScreen() {
+            console.log("Forcing loading screen to hide after 5 seconds");
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                appElement.classList.remove('hidden');
+                // Initialize the app even if Telegram is not available
+                if (!window.Telegram || !Telegram.WebApp) {
+                    console.log("Telegram not detected, using test mode");
+                    userData.telegramId = 'test_user_' + Math.floor(Math.random() * 10000);
+                    userData.username = 'Test User';
+                    authenticateUser();
+                }
+            }, 500);
+        }
+
+        // Initialize the app - FIXED VERSION
+        function initializeApp() {
             if (window.Telegram && Telegram.WebApp) {
+                console.log("Initializing Telegram WebApp");
                 appElement.style.display = 'block';
                 adminPanel.style.display = 'none';
                 passwordModal.style.display = 'none';
                 initializeTelegramApp();
             } else {
+                console.log("Telegram WebApp not detected, initializing in standalone mode");
                 appElement.style.display = 'none';
                 adminPanel.style.display = 'none';
                 passwordModal.style.display = 'flex';
@@ -1600,22 +1644,6 @@
             document.addEventListener('gestureend', function(e) {
                 e.preventDefault();
             });
-        });
-
-        // Start 5-second loading countdown
-        function startLoadingCountdown() {
-            let seconds = 3;
-            loadingCountdown.textContent = seconds;
-            
-            loadingScreenInterval = setInterval(() => {
-                seconds--;
-                loadingCountdown.textContent = seconds;
-                
-                if (seconds <= 0) {
-                    clearInterval(loadingScreenInterval);
-                    hideLoadingScreen();
-                }
-            }, 1000);
         }
 
         // Initialize interstitial ads using Monotag
@@ -1645,8 +1673,9 @@
             }
         }
 
-        // Hide loading screen and show app
+        // Hide loading screen and show app - FIXED VERSION
         function hideLoadingScreen() {
+            console.log("Hiding loading screen normally");
             if (loadingScreenInterval) {
                 clearInterval(loadingScreenInterval);
             }
@@ -1679,41 +1708,68 @@
             });
         }
 
-        // Telegram WebApp Initialization
+        // Telegram WebApp Initialization - FIXED VERSION
         function initializeTelegramApp() {
-            Telegram.WebApp.ready();
-            Telegram.WebApp.expand();
-            
-            const user = Telegram.WebApp.initDataUnsafe?.user;
-            if (user) {
-                userData.telegramId = user.id.toString();
-                userData.username = user.username || `user_${user.id}`;
-                userData.profilePic = user.photo_url || '';
+            try {
+                Telegram.WebApp.ready();
+                Telegram.WebApp.expand();
                 
-                updateProfileDisplay();
-                authenticateUser();
-            } else {
-                console.error('Unable to get user data from Telegram');
-                userData.telegramId = 'test_user_' + Math.floor(Math.random() * 10000);
-                userData.username = 'Test User';
+                const user = Telegram.WebApp.initDataUnsafe?.user;
+                if (user) {
+                    userData.telegramId = user.id.toString();
+                    userData.username = user.username || `user_${user.id}`;
+                    userData.profilePic = user.photo_url || '';
+                    
+                    updateProfileDisplay();
+                    authenticateUser();
+                } else {
+                    console.error('Unable to get user data from Telegram');
+                    // Use test data if Telegram user data is not available
+                    userData.telegramId = 'telegram_user_' + Math.floor(Math.random() * 10000);
+                    userData.username = 'Telegram User';
+                    authenticateUser();
+                }
+                
+                checkReferral();
+                
+                setInterval(checkInterstitialAd, 30000);
+                
+                // NEW: Set up periodic check for daily reset
+                setInterval(checkDailyReset, 60000); // Check every minute
+            } catch (error) {
+                console.error('Error initializing Telegram WebApp:', error);
+                // Fallback to test mode if Telegram fails
+                userData.telegramId = 'telegram_fallback_' + Math.floor(Math.random() * 10000);
+                userData.username = 'Telegram Fallback User';
                 authenticateUser();
             }
-            
-            checkReferral();
-            
-            setInterval(checkInterstitialAd, 30000);
-            
-            // NEW: Set up periodic check for daily reset
-            setInterval(checkDailyReset, 60000); // Check every minute
         }
 
-        // Check if user was referred
+        // Check if user was referred - FIXED VERSION
         function checkReferral() {
             const startParam = Telegram.WebApp.initDataUnsafe?.start_param;
             if (startParam && startParam.startsWith('ref_')) {
                 const referrerId = startParam.substring(4);
                 userData.referredBy = referrerId;
                 console.log(`User referred by: ${referrerId}`);
+                
+                // NEW: Check if we need to credit the referrer
+                checkAndCreditReferrer();
+            }
+        }
+
+        // NEW: Check and credit referrer if needed
+        function checkAndCreditReferrer() {
+            if (!userData.referredBy || userData.hasReceivedReferralBonus) {
+                return;
+            }
+            
+            console.log(`Checking if we need to credit referrer: ${userData.referredBy}`);
+            
+            // Check if this is a new user (first time using the app)
+            if (userData.totalTaps === 0 && userData.coins <= 100) {
+                console.log(`New user detected, crediting referrer: ${userData.referredBy}`);
+                creditReferrer();
             }
         }
 
@@ -1755,6 +1811,7 @@
                                 userData.totalTaps = userData.totalTaps || 0;
                                 userData.completedTasks = userData.completedTasks || [];
                                 userData.lastUpdated = userData.lastUpdated || Date.now();
+                                userData.hasReceivedReferralBonus = userData.hasReceivedReferralBonus || false;
                             } else {
                                 // Update Firebase with cached data if it's newer
                                 console.log('Updating Firebase with cached data');
@@ -1811,7 +1868,7 @@
             }, 30000);
         }
 
-        // Create new user document in Firestore
+        // Create new user document in Firestore - FIXED to handle referrals properly
         function createUserDocument() {
             userData.coins = 100;
             userData.totalCoins = 100;
@@ -1822,13 +1879,15 @@
             userData.completedTasks = [];
             userData.lastUpdated = Date.now();
             userData.tasksCompletedAt = null;
+            userData.hasReceivedReferralBonus = false;
             
             db.collection('users').doc(userData.telegramId).set(userData)
                 .then(() => {
                     console.log('User document created in Firebase');
                     
+                    // NEW: Check and credit referrer after creating user document
                     if (userData.referredBy) {
-                        creditReferrer();
+                        checkAndCreditReferrer();
                     }
                     
                     updateUI();
@@ -1839,27 +1898,58 @@
                 });
         }
 
-        // Credit the user who referred this new user
+        // Credit the user who referred this new user - FIXED VERSION
         function creditReferrer() {
-            if (!userData.referredBy) return;
+            if (!userData.referredBy || userData.hasReceivedReferralBonus) {
+                console.log('Referral already credited or no referrer');
+                return;
+            }
+            
+            console.log(`Crediting referrer: ${userData.referredBy} for new user: ${userData.telegramId}`);
             
             const referrerRef = db.collection('users').doc(userData.referredBy);
+            
             db.runTransaction(transaction => {
                 return transaction.get(referrerRef).then(doc => {
                     if (!doc.exists) {
                         throw new Error('Referrer does not exist');
                     }
                     
-                    const newCoins = (doc.data().coins || 0) + 500;
-                    const newTotalCoins = (doc.data().totalCoins || 0) + 500;
+                    const referrerData = doc.data();
+                    const newCoins = (referrerData.coins || 0) + 500;
+                    const newTotalCoins = (referrerData.totalCoins || 0) + 500;
+                    
                     transaction.update(referrerRef, {
                         coins: newCoins,
                         totalCoins: newTotalCoins,
                         lastUpdated: Date.now()
                     });
+                    
+                    // Mark that we've credited the referrer for this user
+                    userData.hasReceivedReferralBonus = true;
+                    
+                    return { success: true, referrerName: referrerData.username };
                 });
+            }).then(result => {
+                console.log(`Successfully credited 500 coins to referrer: ${userData.referredBy}`);
+                
+                // Update current user to mark referral as processed
+                updateUserData();
+                
+                // Show success message
+                if (window.Telegram && Telegram.WebApp) {
+                    Telegram.WebApp.showPopup({
+                        title: 'Referral Bonus!',
+                        message: `You received 500 coins for referring ${result.referrerName || 'a friend'}!`,
+                        buttons: [{ type: 'ok' }]
+                    });
+                } else {
+                    alert(`Referral bonus! You received 500 coins for referring ${result.referrerName || 'a friend'}!`);
+                }
             }).catch(error => {
                 console.error('Error crediting referrer:', error);
+                // Don't mark as processed if it failed, so we can retry
+                userData.hasReceivedReferralBonus = false;
             });
         }
 
@@ -2054,7 +2144,8 @@
                 completedTasks: userData.completedTasks,
                 lastUpdated: Date.now(),
                 totalTaps: userData.totalTaps,
-                tasksCompletedAt: userData.tasksCompletedAt
+                tasksCompletedAt: userData.tasksCompletedAt,
+                hasReceivedReferralBonus: userData.hasReceivedReferralBonus || false
             };
             
             // Update Firebase
@@ -2817,20 +2908,48 @@
             }
         }
 
-        // Watch interstitial ad using Monotag
+        // FIXED: Watch interstitial ad using Monotag
         function watchInterstitialAd(taskId) {
             currentAdTaskId = taskId;
             
             if (typeof show_9943956 === 'function') {
-                show_9943956({ type: 'inApp' }).then(() => {
+                // Use the correct Monotag interstitial ad method
+                show_9943956('interstitial').then(() => {
                     completeTask(taskId);
                 }).catch(e => {
                     console.error('Interstitial ad error:', e);
-                    alert('Ad was not completed. Please try again.');
+                    alert('Interstitial ad was not completed. Please try again.');
                 });
             } else {
-                alert('Ad system not available. Please try again later.');
+                // Fallback to simulated ad if Monotag is not available
+                alert('Interstitial ad system not available. Using simulated ad.');
+                simulateInterstitialAd(taskId);
             }
+        }
+
+        // NEW: Simulate interstitial ad if Monotag fails
+        function simulateInterstitialAd(taskId) {
+            adContainer.style.display = 'flex';
+            document.getElementById('ad-message').textContent = "Please watch this interstitial ad for 15 seconds to earn your reward";
+            
+            let seconds = 15;
+            adTimer.textContent = seconds;
+            
+            if (adCountdownInterval) {
+                clearInterval(adCountdownInterval);
+            }
+            
+            adCountdownInterval = setInterval(() => {
+                seconds--;
+                adTimer.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(adCountdownInterval);
+                    adCountdownInterval = null;
+                    completeTask(taskId);
+                    adContainer.style.display = 'none';
+                }
+            }, 1000);
         }
 
         // Watch ad (with 10-second timer)
