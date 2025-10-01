@@ -1077,7 +1077,7 @@
                     <div class="daily-limit-info">
                         <h3>Daily Limit: 1,000 Taps</h3>
                         <p>You can tap 1,000 times per day. Reset in:</p>
-                        <div class="countdown-timer hidden" id="countdown-timer">24:00:00</div>
+                        <div class="countdown-timer" id="countdown-timer">24:00:00</div>
                     </div>
                 </div>
             </div>
@@ -1702,6 +1702,9 @@
             checkReferral();
             
             setInterval(checkInterstitialAd, 30000);
+            
+            // NEW: Set up periodic check for daily reset
+            setInterval(checkDailyReset, 60000); // Check every minute
         }
 
         // Check if user was referred
@@ -1762,7 +1765,7 @@
                             checkTasksReset();
                             updateUI();
                             
-                            // FIX: Properly handle limit reached state
+                            // FIXED: Properly handle limit reached state
                             if (userData.limitReachedTime) {
                                 const limitTime = userData.limitReachedTime.seconds ? 
                                     new Date(userData.limitReachedTime.seconds * 1000) : 
@@ -1906,14 +1909,38 @@
             }
         }
 
-        // Check if daily tap counter needs reset
+        // FIXED: Check if daily tap counter needs reset
         function checkDailyReset() {
+            // First check if we need to reset based on the last tap date (new day)
+            const now = new Date();
+            const lastTapDate = userData.lastTapDate ? 
+                (userData.lastTapDate.seconds ? new Date(userData.lastTapDate.seconds * 1000) : new Date(userData.lastTapDate)) : 
+                new Date(0);
+            
+            if (lastTapDate.toDateString() !== now.toDateString()) {
+                userData.tapsToday = 0;
+                userData.limitReachedTime = null;
+                userData.lastTapDate = now;
+                
+                tapCoin.classList.remove('disabled');
+                countdownTimer.classList.add('hidden');
+                
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+                
+                updateUserData();
+                updateUI();
+                return;
+            }
+            
+            // Then check if we need to reset based on the limit reached time (24 hours passed)
             if (userData.limitReachedTime) {
                 const limitTime = userData.limitReachedTime.seconds ? 
                     new Date(userData.limitReachedTime.seconds * 1000) : 
                     new Date(userData.limitReachedTime);
                 
-                const now = new Date();
                 const hoursPassed = (now - limitTime) / (1000 * 60 * 60);
                 
                 if (hoursPassed >= 24) {
@@ -1930,18 +1957,11 @@
                     }
                     
                     updateUserData();
+                    updateUI();
+                } else {
+                    // Update the countdown display if limit is still active
+                    updateCountdown();
                 }
-            }
-            
-            const now = new Date();
-            const lastTapDate = userData.lastTapDate ? 
-                (userData.lastTapDate.seconds ? new Date(userData.lastTapDate.seconds * 1000) : new Date(userData.lastTapDate)) : 
-                new Date(0);
-            
-            if (lastTapDate.toDateString() !== now.toDateString() && !userData.limitReachedTime) {
-                userData.tapsToday = 0;
-                userData.lastTapDate = now;
-                updateUserData();
             }
         }
 
@@ -2461,9 +2481,12 @@
             });
         }
 
-        // Handle coin tap with fixed daily limit
+        // FIXED: Handle coin tap with proper daily limit reset
         function handleTap() {
-            // Check if daily limit is reached BEFORE processing the tap
+            // First check if we need to reset the daily limit
+            checkDailyReset();
+            
+            // Check if daily limit is reached
             if (userData.tapsToday >= FIXED_DAILY_TAP_LIMIT) {
                 if (!userData.limitReachedTime) {
                     userData.limitReachedTime = new Date();
@@ -2514,7 +2537,7 @@
             profileTodayTaps.textContent = `${userData.tapsToday}/${FIXED_DAILY_TAP_LIMIT}`;
         }
 
-        // Start 24-hour countdown timer
+        // Start 24-hour countdown timer - FIXED to persist across app sessions
         function startCountdown() {
             tapCoin.classList.add('disabled');
             countdownTimer.classList.remove('hidden');
@@ -2527,9 +2550,17 @@
             countdownInterval = setInterval(updateCountdown, 1000);
         }
 
-        // Update countdown timer display
+        // Update countdown timer display - FIXED to work correctly
         function updateCountdown() {
-            if (!userData.limitReachedTime) return;
+            if (!userData.limitReachedTime) {
+                tapCoin.classList.remove('disabled');
+                countdownTimer.classList.add('hidden');
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
+                return;
+            }
             
             const limitTime = userData.limitReachedTime.seconds ? 
                 new Date(userData.limitReachedTime.seconds * 1000) : 
@@ -2539,6 +2570,7 @@
             const timeDiff = limitTime.getTime() + (24 * 60 * 60 * 1000) - now.getTime();
             
             if (timeDiff <= 0) {
+                // Reset the limit
                 userData.tapsToday = 0;
                 userData.limitReachedTime = null;
                 userData.lastTapDate = now;
